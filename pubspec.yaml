@@ -1,0 +1,116 @@
+name: sorutrack_pro
+description: "A production-grade, cross-platform nutrition tracking app."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State Management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+
+  # DI
+  get_it: ^9.2.1
+  injectable: ^2.3.2
+
+  # Database
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0+1
+  drift: ^2.14.1
+
+  # Networking
+  dio: ^5.4.0
+  retrofit: ^4.1.0
+  # Gemini AI
+  google_generative_ai: ^0.4.3
+
+  # Charts & Visualization
+  fl_chart: ^1.2.0
+  syncfusion_flutter_charts: ^32.2.9
+
+  # Notifications
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+
+  # Import/Export
+  path_provider: ^2.1.2
+  file_picker: ^10.3.10
+  share_plus: ^12.0.1
+  csv: ^7.2.0
+  excel: ^4.0.2
+  pdf: ^3.10.8
+  printing: ^5.11.1
+  screenshot: ^3.0.0
+
+  # UI/UX
+  animate_do: ^4.2.0
+  shimmer: ^3.0.0
+  lottie: ^3.1.0
+  cached_network_image: ^3.3.1
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.5
+  workmanager: ^0.5.2
+
+  # Storage
+  flutter_secure_storage: ^9.0.0
+
+  # Gamification
+  confetti: ^0.8.0
+
+  # Widgets
+  home_widget: ^0.9.0
+
+  # Platform
+  universal_platform: ^1.1.0
+
+  # Utils
+  intl: ^0.20.2
+  uuid: ^4.3.3
+  crypto: ^3.0.3
+  logger: ^2.2.0
+  json_annotation: ^4.9.0
+  freezed_annotation: ^3.1.0
+
+  # Functional programming
+  dartz: ^0.10.1 # For Either type
+  rxdart: ^0.28.0
+
+  # Encryption
+  encrypt: ^5.0.3
+
+  # Scanner
+  mobile_scanner: ^6.0.0
+  google_fonts: ^8.0.2
+  go_router: ^17.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.8
+  injectable_generator: ^2.4.1
+  drift_dev: ^2.14.1
+  retrofit_generator: ^10.2.3
+  freezed: ^3.2.5
+  json_serializable: ^6.8.0
+  mockito: ^5.4.4
+  bloc_test: ^10.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/food_database.db
+    # - assets/images/
+    # - assets/lottie/

@@ -1,0 +1,221 @@
+00:00 +0: loading /home/sundar/Desktop/Works/SoruTrack/test/core/nutrition/nutrition_engine_test.dart
+lib/features/auth/domain/models/user_profile.dart:8:7: Error: The non-abstract class 'UserProfile' is missing implementations for these members:
+ - _$UserProfile.activityLevel
+ - _$UserProfile.age
+ - _$UserProfile.allergies
+ - _$UserProfile.bodyFatPercentage
+ - _$UserProfile.cuisines
+ - _$UserProfile.dietaryPreference
+ - _$UserProfile.gender
+ - _$UserProfile.goal
+ - _$UserProfile.height
+ - _$UserProfile.heightUnit
+ - _$UserProfile.id
+ - _$UserProfile.isLactating
+ - _$UserProfile.isOnboarded
+ - _$UserProfile.isPregnant
+ - _$UserProfile.mealReminderAfternoon
+ - _$UserProfile.mealReminderEvening
+ - _$UserProfile.mealReminderMorning
+ - _$UserProfile.name
+ - _$UserProfile.targetDate
+ - _$UserProfile.targetWeight
+ - _$UserProfile.toJson
+ - _$UserProfile.waterReminderIntervalMinutes
+ - _$UserProfile.weeklyGoal
+ - _$UserProfile.weight
+ - _$UserProfile.weightUnit
+Try to either
+ - provide an implementation,
+ - inherit an implementation from a superclass or mixin,
+ - mark the class as abstract, or
+ - provide a 'noSuchMethod' implementation.
+class UserProfile with _$UserProfile {
+      ^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:25:21: Context: '_$UserProfile.activityLevel' is defined here.
+  ActivityLevel get activityLevel;
+                    ^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:19:11: Context: '_$UserProfile.age' is defined here.
+  int get age;
+          ^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:31:20: Context: '_$UserProfile.allergies' is defined here.
+  List<String> get allergies;
+                   ^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:38:15: Context: '_$UserProfile.bodyFatPercentage' is defined here.
+  double? get bodyFatPercentage;
+              ^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:32:20: Context: '_$UserProfile.cuisines' is defined here.
+  List<String> get cuisines;
+                   ^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:30:25: Context: '_$UserProfile.dietaryPreference' is defined here.
+  DietaryPreference get dietaryPreference;
+                        ^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:20:14: Context: '_$UserProfile.gender' is defined here.
+  Gender get gender;
+             ^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:26:16: Context: '_$UserProfile.goal' is defined here.
+  GoalType get goal;
+               ^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:21:14: Context: '_$UserProfile.height' is defined here.
+  double get height;
+             ^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:22:18: Context: '_$UserProfile.heightUnit' is defined here.
+  HeightUnit get heightUnit;
+                 ^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:17:15: Context: '_$UserProfile.id' is defined here.
+  String? get id;
+              ^^
+lib/features/auth/domain/models/user_profile.freezed.dart:40:12: Context: '_$UserProfile.isLactating' is defined here.
+  bool get isLactating;
+           ^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:37:12: Context: '_$UserProfile.isOnboarded' is defined here.
+  bool get isOnboarded;
+           ^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:39:12: Context: '_$UserProfile.isPregnant' is defined here.
+  bool get isPregnant;
+           ^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:34:16: Context: '_$UserProfile.mealReminderAfternoon' is defined here.
+  DateTime get mealReminderAfternoon;
+               ^^^^^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:35:16: Context: '_$UserProfile.mealReminderEvening' is defined here.
+  DateTime get mealReminderEvening;
+               ^^^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:33:16: Context: '_$UserProfile.mealReminderMorning' is defined here.
+  DateTime get mealReminderMorning;
+               ^^^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:18:14: Context: '_$UserProfile.name' is defined here.
+  String get name;
+             ^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:29:17: Context: '_$UserProfile.targetDate' is defined here.
+  DateTime? get targetDate;
+                ^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:27:14: Context: '_$UserProfile.targetWeight' is defined here.
+  double get targetWeight;
+             ^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:50:24: Context: '_$UserProfile.toJson' is defined here.
+  Map<String, dynamic> toJson();
+                       ^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:36:11: Context: '_$UserProfile.waterReminderIntervalMinutes' is defined here.
+  int get waterReminderIntervalMinutes;
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:28:14: Context: '_$UserProfile.weeklyGoal' is defined here.
+  double get weeklyGoal;
+             ^^^^^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:23:14: Context: '_$UserProfile.weight' is defined here.
+  double get weight;
+             ^^^^^^
+lib/features/auth/domain/models/user_profile.freezed.dart:24:18: Context: '_$UserProfile.weightUnit' is defined here.
+  WeightUnit get weightUnit;
+                 ^^^^^^^^^^
+00:00 +0 -1: loading /home/sundar/Desktop/Works/SoruTrack/test/core/nutrition/nutrition_engine_test.dart [E]
+  Failed to load "/home/sundar/Desktop/Works/SoruTrack/test/core/nutrition/nutrition_engine_test.dart":
+  Compilation failed for testPath=/home/sundar/Desktop/Works/SoruTrack/test/core/nutrition/nutrition_engine_test.dart: lib/features/auth/domain/models/user_profile.dart:8:7: Error: The non-abstract class 'UserProfile' is missing implementations for these members:
+   - _$UserProfile.activityLevel
+   - _$UserProfile.age
+   - _$UserProfile.allergies
+   - _$UserProfile.bodyFatPercentage
+   - _$UserProfile.cuisines
+   - _$UserProfile.dietaryPreference
+   - _$UserProfile.gender
+   - _$UserProfile.goal
+   - _$UserProfile.height
+   - _$UserProfile.heightUnit
+   - _$UserProfile.id
+   - _$UserProfile.isLactating
+   - _$UserProfile.isOnboarded
+   - _$UserProfile.isPregnant
+   - _$UserProfile.mealReminderAfternoon
+   - _$UserProfile.mealReminderEvening
+   - _$UserProfile.mealReminderMorning
+   - _$UserProfile.name
+   - _$UserProfile.targetDate
+   - _$UserProfile.targetWeight
+   - _$UserProfile.toJson
+   - _$UserProfile.waterReminderIntervalMinutes
+   - _$UserProfile.weeklyGoal
+   - _$UserProfile.weight
+   - _$UserProfile.weightUnit
+  Try to either
+   - provide an implementation,
+   - inherit an implementation from a superclass or mixin,
+   - mark the class as abstract, or
+   - provide a 'noSuchMethod' implementation.
+  class UserProfile with _$UserProfile {
+        ^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:25:21: Context: '_$UserProfile.activityLevel' is defined here.
+    ActivityLevel get activityLevel;
+                      ^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:19:11: Context: '_$UserProfile.age' is defined here.
+    int get age;
+            ^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:31:20: Context: '_$UserProfile.allergies' is defined here.
+    List<String> get allergies;
+                     ^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:38:15: Context: '_$UserProfile.bodyFatPercentage' is defined here.
+    double? get bodyFatPercentage;
+                ^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:32:20: Context: '_$UserProfile.cuisines' is defined here.
+    List<String> get cuisines;
+                     ^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:30:25: Context: '_$UserProfile.dietaryPreference' is defined here.
+    DietaryPreference get dietaryPreference;
+                          ^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:20:14: Context: '_$UserProfile.gender' is defined here.
+    Gender get gender;
+               ^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:26:16: Context: '_$UserProfile.goal' is defined here.
+    GoalType get goal;
+                 ^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:21:14: Context: '_$UserProfile.height' is defined here.
+    double get height;
+               ^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:22:18: Context: '_$UserProfile.heightUnit' is defined here.
+    HeightUnit get heightUnit;
+                   ^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:17:15: Context: '_$UserProfile.id' is defined here.
+    String? get id;
+                ^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:40:12: Context: '_$UserProfile.isLactating' is defined here.
+    bool get isLactating;
+             ^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:37:12: Context: '_$UserProfile.isOnboarded' is defined here.
+    bool get isOnboarded;
+             ^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:39:12: Context: '_$UserProfile.isPregnant' is defined here.
+    bool get isPregnant;
+             ^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:34:16: Context: '_$UserProfile.mealReminderAfternoon' is defined here.
+    DateTime get mealReminderAfternoon;
+                 ^^^^^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:35:16: Context: '_$UserProfile.mealReminderEvening' is defined here.
+    DateTime get mealReminderEvening;
+                 ^^^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:33:16: Context: '_$UserProfile.mealReminderMorning' is defined here.
+    DateTime get mealReminderMorning;
+                 ^^^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:18:14: Context: '_$UserProfile.name' is defined here.
+    String get name;
+               ^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:29:17: Context: '_$UserProfile.targetDate' is defined here.
+    DateTime? get targetDate;
+                  ^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:27:14: Context: '_$UserProfile.targetWeight' is defined here.
+    double get targetWeight;
+               ^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:50:24: Context: '_$UserProfile.toJson' is defined here.
+    Map<String, dynamic> toJson();
+                         ^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:36:11: Context: '_$UserProfile.waterReminderIntervalMinutes' is defined here.
+    int get waterReminderIntervalMinutes;
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:28:14: Context: '_$UserProfile.weeklyGoal' is defined here.
+    double get weeklyGoal;
+               ^^^^^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:23:14: Context: '_$UserProfile.weight' is defined here.
+    double get weight;
+               ^^^^^^
+  lib/features/auth/domain/models/user_profile.freezed.dart:24:18: Context: '_$UserProfile.weightUnit' is defined here.
+    WeightUnit get weightUnit;
+                   ^^^^^^^^^^
+  .
+00:00 +0 -1: Some tests failed.
