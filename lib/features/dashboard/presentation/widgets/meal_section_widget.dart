@@ -55,7 +55,7 @@ class MealSectionWidget extends StatelessWidget {
   Widget _buildMealCard(BuildContext context, MealSummary meal) {
     final theme = Theme.of(context);
     final hasItems = meal.itemCount > 0;
-    
+
     // Map existing string types to the chip's subset
     final enumType = _getMealTypeEnum(meal.name);
 
@@ -93,7 +93,7 @@ class MealSectionWidget extends StatelessWidget {
         subtitle: Text(
           hasItems ? '${meal.itemCount} items' : 'No food logged',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         children: [
@@ -108,7 +108,10 @@ class MealSectionWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 6.0),
                         child: Row(
                           children: [
-                            Icon(Icons.circle, size: 6, color: theme.colorScheme.primary.withOpacity(0.5)),
+                            Icon(Icons.circle,
+                                size: 6,
+                                color: theme.colorScheme.primary
+                                    .withValues(alpha: 0.5)),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -126,7 +129,8 @@ class MealSectionWidget extends StatelessWidget {
                         'and ${meal.itemCount - 3} more...',
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontStyle: FontStyle.italic,
-                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -145,7 +149,8 @@ class MealSectionWidget extends StatelessWidget {
                 label: const Text('Add Food'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),

@@ -67,9 +67,9 @@ class _OnboardingStep7State extends State<OnboardingStep7> {
   @override
   Widget build(BuildContext context) {
     return FadeInRight(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: SingleChildScrollView(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -133,21 +133,21 @@ class _OnboardingStep7State extends State<OnboardingStep7> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
                 ),
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lock_outline, color: Colors.amber.shade800),
+                        Icon(Icons.lock_outline, color: Theme.of(context).primaryColor),
                         const SizedBox(width: 8),
                         Text(
                           'Privacy Note',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.amber.shade900,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                       ],
@@ -155,7 +155,7 @@ class _OnboardingStep7State extends State<OnboardingStep7> {
                     const SizedBox(height: 8),
                     Text(
                       'Your key is stored only on this device using OS-level encryption. We never transmit or store it on any server.',
-                      style: TextStyle(color: Colors.amber.shade900, fontSize: 13),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 13),
                     ),
                   ],
                 ),
@@ -194,11 +194,9 @@ class _OnboardingStep7State extends State<OnboardingStep7> {
           ],
         );
       case ApiKeyValidationResult.networkError:
-        return const Row(
+        return Row(
           children: [
-            Icon(Icons.wifi_off, color: Colors.grey),
-            SizedBox(width: 8),
-            Expanded(child: Text("Couldn't connect. Check your internet and try again.", style: TextStyle(color: Colors.grey))),
+            Expanded(child: Text("Couldn't connect. Check your internet and try again.", style: TextStyle(color: Theme.of(context).disabledColor))),
           ],
         );
     }

@@ -50,6 +50,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
           final waterIntake = await _dbHelper.getWaterByDate(userId, dateStr);
           final streak = await _dbHelper.getCurrentStreak(userId);
           final weeklyCalData = await getWeeklyCalories(userId);
+          final burnedCals = await _dbHelper.getExerciseCaloriesByDate(userId, dateStr);
 
           // 4. Map Meals
           final List<MealSummary> meals = [];
@@ -64,30 +65,34 @@ class DashboardRepositoryImpl implements DashboardRepository {
               time: DateTime.parse(mealMap['meal_time'] as String),
               totalCalories: (mealMap['total_calories'] as num?)?.toDouble() ?? 0.0,
               itemCount: mealMap['item_count'] as int,
-              itemPreviews: items.take(3).map((e) => "Item").toList(), // Placeholder
+              itemPreviews: items.take(3).map((e) => e['name'] as String? ?? "Item").toList(),
             ));
           }
 
           // 5. Greeting
           final hour = DateTime.now().hour;
           String greeting;
-          if (hour < 12) greeting = "Good morning";
-          else if (hour < 17) greeting = "Good afternoon";
-          else greeting = "Good evening";
+          if (hour < 12) {
+            greeting = "Good morning";
+          } else if (hour < 17) {
+            greeting = "Good afternoon";
+          } else {
+            greeting = "Good evening";
+          }
           greeting = "$greeting, ${profile.name}! 🌅";
 
           final dashboardData = DashboardData(
             nutritionSummary: DailyNutritionSummary(
               consumedCalories: (nutritionMap['calories'] as num?)?.toDouble() ?? 0.0,
               targetCalories: targetCalories,
-              burnedCalories: 0.0, // TODO: Implement exercise logs
+              burnedCalories: burnedCals,
               proteinG: (nutritionMap['protein'] as num?)?.toDouble() ?? 0.0,
               proteinTargetG: macros['protein']!,
               carbsG: (nutritionMap['carbs'] as num?)?.toDouble() ?? 0.0,
               carbsTargetG: macros['carbs']!,
               fatG: (nutritionMap['fat'] as num?)?.toDouble() ?? 0.0,
               fatTargetG: macros['fat']!,
-              fiberG: 0.0, // TODO: Add fiber to meal_items
+              fiberG: (nutritionMap['fiber'] as num?)?.toDouble() ?? 0.0,
               fiberTargetG: fiberTarget,
             ),
             meals: meals,
@@ -146,4 +151,16 @@ class DashboardRepositoryImpl implements DashboardRepository {
       return Left(DatabaseFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> logWater(String userId, DateTime date, int mlToAdd) async {
+    try {
+      final dateStr = date.toIso8601String().split('T')[0];
+      await _dbHelper.logWater(userId, dateStr, mlToAdd.toDouble());
+      return const Right(null);
+    } catch (e) {
+      return Left(DatabaseFailure(e.toString()));
+    }
+  }
 }
+

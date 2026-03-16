@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 import 'core/di/injection.dart';
 import 'core/database/database_helper.dart';
 import 'core/services/background_task_service.dart';
 import 'app.dart';
 import 'package:logger/logger.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +16,10 @@ void main() async {
   tz.initializeTimeZones();
 
   // Initialize Background Tasks
-  await BackgroundTaskService.init();
-  await BackgroundTaskService.scheduleAutoBackup(const Duration(days: 1));
+  if (!kIsWeb) {
+    await BackgroundTaskService.init();
+    await BackgroundTaskService.scheduleAutoBackup(const Duration(days: 1));
+  }
 
   // Initialize Dependency Injection
   await configureDependencies();
@@ -30,6 +33,12 @@ void main() async {
   FlutterError.onError = (details) {
     logger.e('Flutter Error', error: details.exception, stackTrace: details.stack);
   };
+  // Setup HydratedBloc Storage
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory((await getApplicationDocumentsDirectory()).path),
+  );
 
   runApp(const SoruTrackProApp());
 }

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:animate_do/animate_do.dart';
-import '../cubit/profile_cubit.dart';
-import '../domain/models/auth_enums.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sorutrack_pro/features/auth/presentation/cubit/profile_cubit.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/user_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -17,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              // Edit mode logic
+              context.push('/edit-profile');
             },
           ),
         ],
@@ -196,30 +197,24 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 10,
-            ),
-          ],
+          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: color),
             const SizedBox(height: 12),
-            Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            Text(title, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
-                Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(width: 4),
-                Text(unit, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(unit, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ],
@@ -264,7 +259,7 @@ class _MacroItem extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: color.withOpacity(0.2), width: 4),
+            border: Border.all(color: color.withValues(alpha: 0.2), width: 4),
           ),
           child: Center(
             child: Text(
@@ -291,8 +286,9 @@ class _WeightChart extends StatelessWidget {
       height: 200,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
       ),
       child: LineChart(
         LineChartData(
@@ -316,7 +312,7 @@ class _WeightChart extends StatelessWidget {
               dotData: const FlDotData(show: true),
               belowBarData: BarAreaData(
                 show: true,
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               ),
             ),
           ],

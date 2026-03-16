@@ -1,7 +1,8 @@
+import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:logger/logger.dart';
-import '../database/database_helper.dart';
+
 import 'injection.config.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -13,10 +14,14 @@ final GetIt getIt = GetIt.instance;
 )
 Future<void> configureDependencies() async {
   // Initialize generated dependencies
-  await getIt.init();
+  getIt.init();
 }
 
 @module
 abstract class RegisterModule {
-  // Add third party dependencies here if needed
+  @lazySingleton
+  Dio get dio => Dio();
+
+  @lazySingleton
+  Logger get logger => Logger();
 }

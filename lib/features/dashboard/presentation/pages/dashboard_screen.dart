@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/dashboard_cubit.dart';
-import '../cubit/dashboard_state.dart';
-import '../widgets/calorie_ring_widget.dart';
-import '../widgets/header_section.dart';
-import '../widgets/insights_card.dart';
-import '../widgets/macro_bars_widget.dart';
-import '../widgets/meal_section_widget.dart';
-import '../widgets/quick_actions_row.dart';
-import '../widgets/water_tracker_widget.dart';
-import '../widgets/weekly_chart_widget.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/cubit/dashboard_state.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/calorie_ring_widget.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/header_section.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/insights_card.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/macro_bars_widget.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/meal_section_widget.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/quick_actions_row.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/water_tracker_widget.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/weekly_chart_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -103,6 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               WaterTrackerWidget(
                 currentMl: data.waterIntakeMl,
                 targetMl: data.waterTargetMl,
+                onAddWater: () => context.read<DashboardCubit>().addWater(250),
               ),
               const SizedBox(height: 32),
               WeeklyChartWidget(data: data.weeklyCalories),
@@ -144,8 +145,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Column(
                         children: [
                           Card(
-                            padding: const EdgeInsets.all(24),
-                            child: CalorieRingWidget(summary: data.nutritionSummary),
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: CalorieRingWidget(summary: data.nutritionSummary),
+                            ),
                           ),
                           const SizedBox(height: 32),
                           Text(
@@ -163,8 +166,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Column(
                         children: [
                           Card(
-                            padding: const EdgeInsets.all(24),
-                            child: MacroBarsWidget(summary: data.nutritionSummary),
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: MacroBarsWidget(summary: data.nutritionSummary),
+                            ),
                           ),
                           const SizedBox(height: 32),
                           const QuickActionsRow(),
@@ -174,6 +179,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           WaterTrackerWidget(
                             currentMl: data.waterIntakeMl,
                             targetMl: data.waterTargetMl,
+                            onAddWater: () => context.read<DashboardCubit>().addWater(250),
                           ),
                           const SizedBox(height: 32),
                           WeeklyChartWidget(data: data.weeklyCalories),
@@ -214,15 +220,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         Expanded(
                           child: Card(
-                            padding: const EdgeInsets.all(32),
-                            child: CalorieRingWidget(summary: data.nutritionSummary),
+                            child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: CalorieRingWidget(summary: data.nutritionSummary),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 24),
                         Expanded(
                           child: Card(
-                            padding: const EdgeInsets.all(32),
-                            child: MacroBarsWidget(summary: data.nutritionSummary),
+                            child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: MacroBarsWidget(summary: data.nutritionSummary),
+                            ),
                           ),
                         ),
                       ],
@@ -245,6 +255,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     WaterTrackerWidget(
                       currentMl: data.waterIntakeMl,
                       targetMl: data.waterTargetMl,
+                      onAddWater: () => context.read<DashboardCubit>().addWater(250),
                     ),
                     const SizedBox(height: 32),
                     Text(

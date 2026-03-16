@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../cubit/dashboard_cubit.dart';
 
 class HeaderSection extends StatelessWidget {
@@ -60,7 +61,7 @@ class HeaderSection extends StatelessWidget {
               ],
             ),
             IconButton(
-              onPressed: () => Navigator.of(context).pushNamed('/profile'),
+              onPressed: () => context.push('/profile'),
               icon: const CircleAvatar(
                 child: Icon(Icons.person),
               ),

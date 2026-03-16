@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import '../models/gamification_models.dart';
+import 'package:flutter/material.dart' hide Badge;
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart';
 
 class BadgeItem extends StatelessWidget {
   final Badge badge;
@@ -23,7 +23,7 @@ class BadgeItem extends StatelessWidget {
             decoration: BoxDecoration(
               color: isUnlocked
                   ? Theme.of(context).colorScheme.primaryContainer
-                  : Colors.grey.withOpacity(0.1),
+                  : Colors.grey.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

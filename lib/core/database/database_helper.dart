@@ -3,6 +3,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:logger/logger.dart';
 import 'package:injectable/injectable.dart';
@@ -25,13 +26,29 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
+    _logger.i('Initializing database...');
     if (UniversalPlatform.isWindows || UniversalPlatform.isLinux || UniversalPlatform.isMacOS) {
+      _logger.i('Initializing FFI for Desktop');
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
+    } else if (UniversalPlatform.isWeb) {
+      _logger.i('Initializing FFI for Web with explicit options');
+      databaseFactory = createDatabaseFactoryFfiWeb(
+        options: SqfliteFfiWebOptions(
+          sqlite3WasmUri: Uri.parse('sqlite3.wasm'),
+          sharedWorkerUri: Uri.parse('sqflite_sw.js'),
+        ),
+      );
     }
 
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'sorutrack_pro.db');
+    String path;
+    if (UniversalPlatform.isWeb) {
+      path = 'sorutrack_pro.db';
+    } else {
+      final dbPath = await getDatabasesPath();
+      path = join(dbPath, 'sorutrack_pro.db');
+    }
+    _logger.i('Opening database at: $path');
 
     final db = await openDatabase(
       path,
@@ -39,11 +56,14 @@ class DatabaseHelper {
       onCreate: _onCreate,
       onConfigure: _onConfigure,
       onUpgrade: (db, oldVersion, newVersion) async {
+        _logger.i('Upgrading database from $oldVersion to $newVersion');
         await DatabaseMigration.migrate(db, oldVersion, newVersion);
       },
     );
+    _logger.i('Database opened successfully.');
 
     // Phase 9: Copy and merge bundled food database if needed
+    _logger.i('Checking for food database merge...');
     await _copyAndMergeFoodDatabase(db);
 
     return db;
@@ -69,6 +89,10 @@ class DatabaseHelper {
   }
 
   Future<void> _copyAndMergeFoodDatabase(Database db) async {
+    if (UniversalPlatform.isWeb) {
+      _logger.i('Merging bundled food database skipped on Web (not supported via dart:io)');
+      return;
+    }
     final dbPath = await getDatabasesPath();
     final assetPath = join(dbPath, 'food_database.db');
 
@@ -111,7 +135,9 @@ class DatabaseHelper {
 
   Future<void> _onConfigure(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON');
-    await db.execute('PRAGMA journal_mode = WAL');
+    if (!UniversalPlatform.isWeb) {
+      await db.execute('PRAGMA journal_mode = WAL');
+    }
     await db.execute('PRAGMA synchronous = NORMAL');
   }
 
@@ -503,7 +529,8 @@ class DatabaseHelper {
         SUM(mi.calories) as calories,
         SUM(mi.protein) as protein,
         SUM(mi.carbs) as carbs,
-        SUM(mi.fat) as fat
+        SUM(mi.fat) as fat,
+        SUM(mi.fiber) as fiber
       FROM meal_items mi
       JOIN meals m ON mi.meal_id = m.id
       WHERE m.user_id = ? AND DATE(m.meal_time) = ? AND m.deleted_at IS NULL AND mi.deleted_at IS NULL
@@ -512,7 +539,45 @@ class DatabaseHelper {
     if (result.isNotEmpty && result.first['calories'] != null) {
       return result.first;
     }
-    return {'calories': 0.0, 'protein': 0.0, 'carbs': 0.0, 'fat': 0.0};
+    return {'calories': 0.0, 'protein': 0.0, 'carbs': 0.0, 'fat': 0.0, 'fiber': 0.0};
+  }
+
+  Future<double> getExerciseCaloriesByDate(String userId, String date) async {
+    final db = await database;
+    final result = await db.rawQuery('''
+      SELECT SUM(calories_burned) as total_burned
+      FROM exercise_logs
+      WHERE user_id = ? AND DATE(logged_at) = ? AND deleted_at IS NULL
+    ''', [userId, date]);
+
+    if (result.isNotEmpty && result.first['total_burned'] != null) {
+      return (result.first['total_burned'] as num).toDouble();
+    }
+    return 0.0;
+  }
+
+  Future<void> clearAllData() async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete('meals');
+      await txn.delete('meal_items');
+      await txn.delete('daily_logs');
+      await txn.delete('water_logs');
+      await txn.delete('weight_logs');
+      await txn.delete('exercise_logs');
+      await txn.delete('food_cache');
+      await txn.delete('api_usage');
+      await txn.delete('gamification_data');
+      await txn.delete('xp_history');
+      await txn.delete('user_challenges');
+      await txn.delete('achievements');
+      await txn.delete('notifications_schedule');
+      // We keep users and app_settings or reset them? 
+      // User asked to clear "all your meals, weight history, and settings".
+      await txn.delete('users');
+      await txn.delete('app_settings');
+      await txn.delete('notification_settings');
+    });
   }
 
   Future<List<Map<String, dynamic>>> getMealsByDate(String userId, String date) async {
@@ -712,5 +777,19 @@ class DatabaseHelper {
 
     sql += " ORDER BY m.meal_time DESC";
     return await db.rawQuery(sql, args);
+  }
+
+  Future<void> logWater(String userId, String date, double amountMl) async {
+    final db = await database;
+    await db.insert(
+      'water_logs',
+      {
+        'id': DateTime.now().millisecondsSinceEpoch.toString(), // Simple ID gen
+        'user_id': userId,
+        'amount': amountMl,
+        // logged_at is CURRENT_TIMESTAMP by default, but we should align with date
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

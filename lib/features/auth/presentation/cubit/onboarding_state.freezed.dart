@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$OnboardingState {
   int get currentStep;
   String get name;
-  int get age;
+  DateTime? get dateOfBirth;
   Gender get gender;
   double get height;
   HeightUnit get heightUnit;
@@ -54,7 +54,8 @@ mixin _$OnboardingState {
             (identical(other.currentStep, currentStep) ||
                 other.currentStep == currentStep) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.age, age) || other.age == age) &&
+            (identical(other.dateOfBirth, dateOfBirth) ||
+                other.dateOfBirth == dateOfBirth) &&
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.heightUnit, heightUnit) ||
@@ -97,7 +98,7 @@ mixin _$OnboardingState {
         runtimeType,
         currentStep,
         name,
-        age,
+        dateOfBirth,
         gender,
         height,
         heightUnit,
@@ -122,7 +123,7 @@ mixin _$OnboardingState {
 
   @override
   String toString() {
-    return 'OnboardingState(currentStep: $currentStep, name: $name, age: $age, gender: $gender, height: $height, heightUnit: $heightUnit, weight: $weight, weightUnit: $weightUnit, activityLevel: $activityLevel, goal: $goal, targetWeight: $targetWeight, weeklyGoal: $weeklyGoal, targetDate: $targetDate, dietaryPreference: $dietaryPreference, allergies: $allergies, cuisines: $cuisines, mealReminderMorning: $mealReminderMorning, mealReminderAfternoon: $mealReminderAfternoon, mealReminderEvening: $mealReminderEvening, waterReminderIntervalMinutes: $waterReminderIntervalMinutes, geminiApiKey: $geminiApiKey, isSubmitting: $isSubmitting, error: $error)';
+    return 'OnboardingState(currentStep: $currentStep, name: $name, dateOfBirth: $dateOfBirth, gender: $gender, height: $height, heightUnit: $heightUnit, weight: $weight, weightUnit: $weightUnit, activityLevel: $activityLevel, goal: $goal, targetWeight: $targetWeight, weeklyGoal: $weeklyGoal, targetDate: $targetDate, dietaryPreference: $dietaryPreference, allergies: $allergies, cuisines: $cuisines, mealReminderMorning: $mealReminderMorning, mealReminderAfternoon: $mealReminderAfternoon, mealReminderEvening: $mealReminderEvening, waterReminderIntervalMinutes: $waterReminderIntervalMinutes, geminiApiKey: $geminiApiKey, isSubmitting: $isSubmitting, error: $error)';
   }
 }
 
@@ -135,7 +136,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res> {
   $Res call(
       {int currentStep,
       String name,
-      int age,
+      DateTime? dateOfBirth,
       Gender gender,
       double height,
       HeightUnit heightUnit,
@@ -173,7 +174,7 @@ class _$OnboardingStateCopyWithImpl<$Res>
   $Res call({
     Object? currentStep = null,
     Object? name = null,
-    Object? age = null,
+    Object? dateOfBirth = freezed,
     Object? gender = null,
     Object? height = null,
     Object? heightUnit = null,
@@ -204,10 +205,10 @@ class _$OnboardingStateCopyWithImpl<$Res>
           ? _self.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      age: null == age
-          ? _self.age
-          : age // ignore: cast_nullable_to_non_nullable
-              as int,
+      dateOfBirth: freezed == dateOfBirth
+          ? _self.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       gender: null == gender
           ? _self.gender
           : gender // ignore: cast_nullable_to_non_nullable
@@ -388,7 +389,7 @@ extension OnboardingStatePatterns on OnboardingState {
     TResult Function(
             int currentStep,
             String name,
-            int age,
+            DateTime? dateOfBirth,
             Gender gender,
             double height,
             HeightUnit heightUnit,
@@ -418,7 +419,7 @@ extension OnboardingStatePatterns on OnboardingState {
         return $default(
             _that.currentStep,
             _that.name,
-            _that.age,
+            _that.dateOfBirth,
             _that.gender,
             _that.height,
             _that.heightUnit,
@@ -462,7 +463,7 @@ extension OnboardingStatePatterns on OnboardingState {
     TResult Function(
             int currentStep,
             String name,
-            int age,
+            DateTime? dateOfBirth,
             Gender gender,
             double height,
             HeightUnit heightUnit,
@@ -491,7 +492,7 @@ extension OnboardingStatePatterns on OnboardingState {
         return $default(
             _that.currentStep,
             _that.name,
-            _that.age,
+            _that.dateOfBirth,
             _that.gender,
             _that.height,
             _that.heightUnit,
@@ -534,7 +535,7 @@ extension OnboardingStatePatterns on OnboardingState {
     TResult? Function(
             int currentStep,
             String name,
-            int age,
+            DateTime? dateOfBirth,
             Gender gender,
             double height,
             HeightUnit heightUnit,
@@ -563,7 +564,7 @@ extension OnboardingStatePatterns on OnboardingState {
         return $default(
             _that.currentStep,
             _that.name,
-            _that.age,
+            _that.dateOfBirth,
             _that.gender,
             _that.height,
             _that.heightUnit,
@@ -596,7 +597,7 @@ class _OnboardingState implements OnboardingState {
   const _OnboardingState(
       {this.currentStep = 0,
       this.name = '',
-      this.age = 25,
+      this.dateOfBirth,
       this.gender = Gender.male,
       this.height = 170,
       this.heightUnit = HeightUnit.cm,
@@ -627,8 +628,7 @@ class _OnboardingState implements OnboardingState {
   @JsonKey()
   final String name;
   @override
-  @JsonKey()
-  final int age;
+  final DateTime? dateOfBirth;
   @override
   @JsonKey()
   final Gender gender;
@@ -713,7 +713,8 @@ class _OnboardingState implements OnboardingState {
             (identical(other.currentStep, currentStep) ||
                 other.currentStep == currentStep) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.age, age) || other.age == age) &&
+            (identical(other.dateOfBirth, dateOfBirth) ||
+                other.dateOfBirth == dateOfBirth) &&
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.heightUnit, heightUnit) ||
@@ -757,7 +758,7 @@ class _OnboardingState implements OnboardingState {
         runtimeType,
         currentStep,
         name,
-        age,
+        dateOfBirth,
         gender,
         height,
         heightUnit,
@@ -782,7 +783,7 @@ class _OnboardingState implements OnboardingState {
 
   @override
   String toString() {
-    return 'OnboardingState(currentStep: $currentStep, name: $name, age: $age, gender: $gender, height: $height, heightUnit: $heightUnit, weight: $weight, weightUnit: $weightUnit, activityLevel: $activityLevel, goal: $goal, targetWeight: $targetWeight, weeklyGoal: $weeklyGoal, targetDate: $targetDate, dietaryPreference: $dietaryPreference, allergies: $allergies, cuisines: $cuisines, mealReminderMorning: $mealReminderMorning, mealReminderAfternoon: $mealReminderAfternoon, mealReminderEvening: $mealReminderEvening, waterReminderIntervalMinutes: $waterReminderIntervalMinutes, geminiApiKey: $geminiApiKey, isSubmitting: $isSubmitting, error: $error)';
+    return 'OnboardingState(currentStep: $currentStep, name: $name, dateOfBirth: $dateOfBirth, gender: $gender, height: $height, heightUnit: $heightUnit, weight: $weight, weightUnit: $weightUnit, activityLevel: $activityLevel, goal: $goal, targetWeight: $targetWeight, weeklyGoal: $weeklyGoal, targetDate: $targetDate, dietaryPreference: $dietaryPreference, allergies: $allergies, cuisines: $cuisines, mealReminderMorning: $mealReminderMorning, mealReminderAfternoon: $mealReminderAfternoon, mealReminderEvening: $mealReminderEvening, waterReminderIntervalMinutes: $waterReminderIntervalMinutes, geminiApiKey: $geminiApiKey, isSubmitting: $isSubmitting, error: $error)';
   }
 }
 
@@ -797,7 +798,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res>
   $Res call(
       {int currentStep,
       String name,
-      int age,
+      DateTime? dateOfBirth,
       Gender gender,
       double height,
       HeightUnit heightUnit,
@@ -835,7 +836,7 @@ class __$OnboardingStateCopyWithImpl<$Res>
   $Res call({
     Object? currentStep = null,
     Object? name = null,
-    Object? age = null,
+    Object? dateOfBirth = freezed,
     Object? gender = null,
     Object? height = null,
     Object? heightUnit = null,
@@ -866,10 +867,10 @@ class __$OnboardingStateCopyWithImpl<$Res>
           ? _self.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      age: null == age
-          ? _self.age
-          : age // ignore: cast_nullable_to_non_nullable
-              as int,
+      dateOfBirth: freezed == dateOfBirth
+          ? _self.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       gender: null == gender
           ? _self.gender
           : gender // ignore: cast_nullable_to_non_nullable

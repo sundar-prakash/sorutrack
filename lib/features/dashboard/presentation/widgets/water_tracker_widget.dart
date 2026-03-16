@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class WaterTrackerWidget extends StatelessWidget {
   final double currentMl;
   final double targetMl;
+  final VoidCallback? onAddWater;
 
   const WaterTrackerWidget({
     super.key,
     required this.currentMl,
     required this.targetMl,
+    this.onAddWater,
   });
 
   @override
@@ -77,9 +79,7 @@ class WaterTrackerWidget extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                // Log 250ml water
-              },
+              onPressed: onAddWater,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.shade600,
                 foregroundColor: Colors.white,

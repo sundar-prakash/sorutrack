@@ -69,8 +69,11 @@ class WeeklyChartWidget extends StatelessWidget {
                 final ratio = d.calories / d.targetCalories;
                 
                 Color color = Colors.green.shade400;
-                if (ratio > 1.1) color = Colors.red.shade400;
-                else if (ratio > 0.9) color = Colors.orange.shade400;
+                if (ratio > 1.1) {
+                  color = Colors.red.shade400;
+                } else if (ratio > 0.9) {
+                  color = Colors.orange.shade400;
+                }
 
                 return BarChartGroupData(
                   x: index,

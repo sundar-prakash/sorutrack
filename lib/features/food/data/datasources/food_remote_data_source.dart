@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import '../../domain/entities/food_item.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
 
 abstract class FoodRemoteDataSource {
   Future<FoodItem?> getFoodByBarcode(String barcode);

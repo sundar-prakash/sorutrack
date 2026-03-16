@@ -1,7 +1,7 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/services/gemini_key_service.dart';
-import '../../domain/models/report_models.dart';
+import 'package:sorutrack_pro/core/services/gemini_key_service.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
 
 @injectable
 class GeminiReportsService {
@@ -19,7 +19,7 @@ class GeminiReportsService {
     if (apiKey == null) return "No API key found. Please add it in settings.";
 
     final model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-3-flash-preview',
       apiKey: apiKey,
     );
 

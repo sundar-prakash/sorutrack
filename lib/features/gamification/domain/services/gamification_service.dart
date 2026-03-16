@@ -1,14 +1,12 @@
 import 'package:injectable/injectable.dart';
-import '../repositories/gamification_repository.dart';
-import '../models/xp_rewards.dart';
-import '../../../../core/services/home_widget_service.dart';
+import 'package:sorutrack_pro/features/gamification/domain/repositories/gamification_repository.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/xp_rewards.dart';
 
 @lazySingleton
 class GamificationService {
   final GamificationRepository _repository;
-  final HomeWidgetService _homeWidgetService;
 
-  GamificationService(this._repository, this._homeWidgetService);
+  GamificationService(this._repository);
 
   Future<void> awardXP(String userId, String rewardKey) async {
     final amount = XPRewards.getReward(rewardKey);

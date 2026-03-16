@@ -10,7 +10,7 @@ class FoodItemCard extends StatefulWidget {
   final int fat;
   final VoidCallback? onTap;
   final Widget? trailing;
-  
+
   const FoodItemCard({
     super.key,
     required this.title,
@@ -27,7 +27,8 @@ class FoodItemCard extends StatefulWidget {
   State<FoodItemCard> createState() => _FoodItemCardState();
 }
 
-class _FoodItemCardState extends State<FoodItemCard> with SingleTickerProviderStateMixin {
+class _FoodItemCardState extends State<FoodItemCard>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
 
   void _toggleExpand() {
@@ -39,7 +40,7 @@ class _FoodItemCardState extends State<FoodItemCard> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return FadeInUp(
       duration: const Duration(milliseconds: 400),
       child: Card(
@@ -68,7 +69,8 @@ class _FoodItemCardState extends State<FoodItemCard> with SingleTickerProviderSt
                           Text(
                             widget.subtitle,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -88,7 +90,8 @@ class _FoodItemCardState extends State<FoodItemCard> with SingleTickerProviderSt
                         Text(
                           'kcal',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -108,9 +111,18 @@ class _FoodItemCardState extends State<FoodItemCard> with SingleTickerProviderSt
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _MacroPill(label: 'Protein', value: '${widget.protein}g', color: Colors.red.shade400),
-                              _MacroPill(label: 'Carbs', value: '${widget.carbs}g', color: Colors.blue.shade400),
-                              _MacroPill(label: 'Fat', value: '${widget.fat}g', color: Colors.orange.shade400),
+                              _MacroPill(
+                                  label: 'Protein',
+                                  value: '${widget.protein}g',
+                                  color: Colors.red.shade400),
+                              _MacroPill(
+                                  label: 'Carbs',
+                                  value: '${widget.carbs}g',
+                                  color: Colors.blue.shade400),
+                              _MacroPill(
+                                  label: 'Fat',
+                                  value: '${widget.fat}g',
+                                  color: Colors.orange.shade400),
                             ],
                           ),
                         )
@@ -142,9 +154,9 @@ class _MacroPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -159,7 +171,7 @@ class _MacroPill extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
-import '../models/report_models.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
 
 class CalorieTrendChart extends StatelessWidget {
   final List<ReportTrendData> data;
@@ -48,7 +48,7 @@ class CalorieTrendChart extends StatelessWidget {
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
             ),
           ),
           if (goalLine != null)
@@ -57,7 +57,7 @@ class CalorieTrendChart extends StatelessWidget {
                 FlSpot(0, goalLine!),
                 FlSpot(data.length.toDouble() - 1, goalLine!),
               ],
-              color: Colors.red.withOpacity(0.5),
+              color: Colors.red.withValues(alpha: 0.5),
               barWidth: 1,
               dashArray: [5, 5],
               dotData: const FlDotData(show: false),
@@ -127,10 +127,9 @@ class MicronutrientRadarChart extends StatelessWidget {
       (data.potassium / rdas['Potassium']!) * 100,
     ];
 
-    return SfRadarChart(
-      primaryXAxis: CategoryAxis(),
-      series: <RadarSeries>[
-        RadarSeries<double, String>(
+    return SfCircularChart(
+      series: <CircularSeries>[
+        RadialBarSeries<double, String>(
           dataSource: percentageData,
           xValueMapper: (double d, index) {
             switch (index) {
@@ -141,10 +140,9 @@ class MicronutrientRadarChart extends StatelessWidget {
               default: return '';
             }
           },
-          yValueMapper: (double d, _) => d > 100 ? 100 : d, // Cap at 100% for radar
-          fillColor: Colors.green.withOpacity(0.3),
-          borderColor: Colors.green,
-          borderWidth: 2,
+          yValueMapper: (double d, _) => d > 100 ? 100 : d,
+          useSeriesColor: true,
+          trackColor: Colors.grey.withValues(alpha: 0.1),
         ),
       ],
     );
@@ -159,7 +157,7 @@ class TopFoodsDonutChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
-      legend: const Legend(isVisible: true, overflowMode: LegendOverflowMode.wrap),
+      legend: const Legend(isVisible: true),
       series: <CircularSeries>[
         DoughnutSeries<TopFood, String>(
           dataSource: data,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import '../../domain/models/parsed_meal.dart';
+
 
 class MealLogListScreen extends StatelessWidget {
   const MealLogListScreen({super.key});

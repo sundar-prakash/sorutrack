@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:confetti/confetti.dart';
 import 'package:animate_do/animate_do.dart';
-import '../models/gamification_models.dart' as models;
+import 'package:share_plus/share_plus.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart'
+    as models;
 
 class AchievementDialog extends StatefulWidget {
   final models.Badge badge;
@@ -18,7 +20,8 @@ class _AchievementDialogState extends State<AchievementDialog> {
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
     _confettiController.play();
   }
 
@@ -42,7 +45,13 @@ class _AchievementDialogState extends State<AchievementDialog> {
             confettiController: _confettiController,
             blastDirectionality: BlastDirectionality.explosive,
             shouldLoop: false,
-            colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange, Colors.purple],
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple
+            ],
           ),
           FadeInUp(
             duration: const Duration(milliseconds: 600),
@@ -53,7 +62,7 @@ class _AchievementDialogState extends State<AchievementDialog> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -103,7 +112,8 @@ class _AchievementDialogState extends State<AchievementDialog> {
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 48, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -112,7 +122,9 @@ class _AchievementDialogState extends State<AchievementDialog> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // TODO: Implement share
+                      SharePlus.instance.share(ShareParams(
+                        text: 'I just earned the ${widget.badge.name} badge on SoruTrack Pro! 🏆\n${widget.badge.description}',
+                      ));
                     },
                     child: const Text('Share Achievement'),
                   ),

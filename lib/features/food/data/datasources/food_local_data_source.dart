@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
-import '../../../../core/database/database_helper.dart';
-import '../entities/food_item.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
+import 'package:sqflite/sqflite.dart';
 
 abstract class FoodLocalDataSource {
   Future<List<FoodItem>> searchFoods(String query, {List<String>? filters, String? sortBy, int limit = 20, int offset = 0});

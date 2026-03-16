@@ -4,7 +4,6 @@ import 'package:universal_platform/universal_platform.dart';
 
 @lazySingleton
 class HomeWidgetService {
-  static const String _groupId = 'group.com.sorutrack.pro';
   static const String _androidWidgetName = 'SoruTrackWidget';
   static const String _iosWidgetName = 'SoruTrackWidget';
 

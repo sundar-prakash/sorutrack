@@ -127,8 +127,8 @@ class _QuickAddFABState extends State<QuickAddFAB>
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
           ),
@@ -145,10 +145,13 @@ class _QuickAddFABState extends State<QuickAddFAB>
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                child: Icon(icon,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant),
               ),
             ),
           ),

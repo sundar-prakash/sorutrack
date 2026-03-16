@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CalendarHeatmap extends StatelessWidget {
-  final Map<DateTime, int> data; // Date to value mapping (e.g. calories met, XP earned)
+  final Map<DateTime, int>
+      data; // Date to value mapping (e.g. calories met, XP earned)
   final int maxValue;
   final Color baseColor;
 
@@ -17,11 +18,11 @@ class CalendarHeatmap extends StatelessWidget {
     // Generate last 7 weeks (49 days)
     final today = DateTime.now();
     final startDate = today.subtract(const Duration(days: 48));
-    
+
     // Group by weeks
     List<List<DateTime>> weeks = [];
     List<DateTime> currentWeek = [];
-    
+
     for (int i = 0; i < 49; i++) {
       currentWeek.add(startDate.add(Duration(days: i)));
       if (currentWeek.length == 7) {
@@ -44,11 +45,10 @@ class CalendarHeatmap extends StatelessWidget {
                 // Remove time part for accurate map lookup
                 final dateKey = DateTime(date.year, date.month, date.day);
                 final value = data[dateKey] ?? 0;
-                
+
                 // Calculate opacity based on max value
-                double opacity = value == 0 
-                  ? 0.1 
-                  : (value / maxValue).clamp(0.2, 1.0);
+                double opacity =
+                    value == 0 ? 0.1 : (value / maxValue).clamp(0.2, 1.0);
 
                 return Tooltip(
                   message: '${date.month}/${date.day}: $value',
@@ -57,9 +57,9 @@ class CalendarHeatmap extends StatelessWidget {
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
-                      color: value > 0 
-                          ? baseColor.withOpacity(opacity)
-                          : Theme.of(context).colorScheme.surfaceVariant,
+                      color: value > 0
+                          ? baseColor.withValues(alpha: opacity)
+                          : Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(3),
                     ),
                   ),

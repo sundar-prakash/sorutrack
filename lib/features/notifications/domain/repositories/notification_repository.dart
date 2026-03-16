@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../../../core/database/database_helper.dart';
-import '../models/notification_settings.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
+import 'package:sorutrack_pro/features/notifications/domain/models/notification_settings.dart';
 
 abstract class NotificationRepository {
   Future<NotificationSettings> getSettings(String userId);

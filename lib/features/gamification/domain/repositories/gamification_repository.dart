@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../models/gamification_models.dart';
+import 'package:sorutrack_pro/core/error/failures.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart';
 
 abstract class GamificationRepository {
   Future<Either<Failure, GamificationData>> getGamificationData(String userId);

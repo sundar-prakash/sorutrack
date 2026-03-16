@@ -9,8 +9,8 @@ class NutriSnackBar {
     Duration duration = const Duration(seconds: 3),
   }) {
     final theme = Theme.of(context);
-    
-    Color backgroundColor = theme.colorScheme.surfaceVariant;
+
+    Color backgroundColor = theme.colorScheme.surfaceContainerHighest;
     Color textColor = theme.colorScheme.onSurfaceVariant;
     IconData icon = Icons.info_outline;
 

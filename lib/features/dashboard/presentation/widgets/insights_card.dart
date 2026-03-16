@@ -15,12 +15,15 @@ class InsightsCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [theme.primaryColor.withOpacity(0.05), theme.primaryColor.withOpacity(0.1)],
+          colors: [
+            theme.primaryColor.withValues(alpha: 0.05),
+            theme.primaryColor.withValues(alpha: 0.1)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.primaryColor.withOpacity(0.1)),
+        border: Border.all(color: theme.primaryColor.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,7 +31,8 @@ class InsightsCard extends StatelessWidget {
           CircleAvatar(
             backgroundColor: theme.primaryColor,
             radius: 14,
-            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
+            child:
+                const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -46,7 +50,6 @@ class InsightsCard extends StatelessWidget {
                 Text(
                   insight!,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade800,
                     height: 1.4,
                   ),
                 ),

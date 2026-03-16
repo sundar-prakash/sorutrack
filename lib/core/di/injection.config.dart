@@ -12,6 +12,7 @@
 import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:logger/logger.dart' as _i974;
 
 import '../../features/auth/data/repositories/user_repository_impl.dart'
     as _i687;
@@ -75,6 +76,7 @@ import '../../features/reports/presentation/bloc/reports_cubit.dart' as _i833;
 import '../database/database_helper.dart' as _i64;
 import '../services/gemini_key_service.dart' as _i171;
 import '../services/home_widget_service.dart' as _i299;
+import 'injection.dart' as _i464;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -87,7 +89,10 @@ extension GetItInjectableX on _i174.GetIt {
       environment,
       environmentFilter,
     );
+    final registerModule = _$RegisterModule();
     gh.lazySingleton<_i64.DatabaseHelper>(() => _i64.DatabaseHelper());
+    gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
+    gh.lazySingleton<_i974.Logger>(() => registerModule.logger);
     gh.lazySingleton<_i171.GeminiKeyService>(() => _i171.GeminiKeyService());
     gh.lazySingleton<_i299.HomeWidgetService>(() => _i299.HomeWidgetService());
     gh.lazySingleton<_i95.BackupService>(() => _i95.BackupService());
@@ -97,31 +102,16 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i549.GeminiMealService(gh<_i171.GeminiKeyService>()));
     gh.factory<_i982.GeminiReportsService>(
         () => _i982.GeminiReportsService(gh<_i171.GeminiKeyService>()));
-    gh.factory<_i70.DataManagementBloc>(() => _i70.DataManagementBloc(
-          gh<InvalidType>(),
-          gh<InvalidType>(),
-          gh<InvalidType>(),
-        ));
-    gh.factory<_i996.BarcodeScannerBloc>(
-        () => _i996.BarcodeScannerBloc(gh<InvalidType>()));
-    gh.factory<_i214.FoodSearchBloc>(
-        () => _i214.FoodSearchBloc(gh<InvalidType>()));
-    gh.factory<_i27.RecipeBuilderBloc>(
-        () => _i27.RecipeBuilderBloc(gh<InvalidType>()));
     gh.lazySingleton<_i81.FoodRemoteDataSource>(
         () => _i81.FoodRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.lazySingleton<_i367.ExportService>(
         () => _i367.ExportService(gh<_i64.DatabaseHelper>()));
     gh.lazySingleton<_i113.ImportService>(
         () => _i113.ImportService(gh<_i64.DatabaseHelper>()));
-    gh.lazySingleton<_i358.GamificationRepositoryImpl>(
+    gh.lazySingleton<_i97.GamificationRepository>(
         () => _i358.GamificationRepositoryImpl(gh<_i64.DatabaseHelper>()));
-    gh.lazySingleton<_i227.ReportsRepositoryImpl>(
+    gh.lazySingleton<_i808.ReportsRepository>(
         () => _i227.ReportsRepositoryImpl(gh<_i64.DatabaseHelper>()));
-    gh.lazySingleton<_i3.GamificationService>(() => _i3.GamificationService(
-          gh<_i97.GamificationRepository>(),
-          gh<_i299.HomeWidgetService>(),
-        ));
     gh.lazySingleton<_i926.UserRepository>(
         () => _i687.UserRepositoryImpl(gh<_i64.DatabaseHelper>()));
     gh.lazySingleton<_i665.DashboardRepository>(
@@ -131,6 +121,8 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.lazySingleton<_i367.NotificationRepository>(
         () => _i367.NotificationRepositoryImpl(gh<_i64.DatabaseHelper>()));
+    gh.lazySingleton<_i3.GamificationService>(
+        () => _i3.GamificationService(gh<_i97.GamificationRepository>()));
     gh.factory<_i638.GamificationBloc>(
         () => _i638.GamificationBloc(gh<_i97.GamificationRepository>()));
     gh.lazySingleton<_i1004.FoodLocalDataSource>(
@@ -142,6 +134,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i24.DashboardCubit>(() => _i24.DashboardCubit(
           gh<_i665.DashboardRepository>(),
           gh<_i299.HomeWidgetService>(),
+        ));
+    gh.factory<_i70.DataManagementBloc>(() => _i70.DataManagementBloc(
+          gh<_i367.ExportService>(),
+          gh<_i113.ImportService>(),
+          gh<_i95.BackupService>(),
         ));
     gh.lazySingleton<_i780.FoodRepository>(() => _i860.FoodRepositoryImpl(
           gh<_i1004.FoodLocalDataSource>(),
@@ -160,10 +157,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i200.CheckOnboardingStatus(gh<_i926.UserRepository>()));
     gh.lazySingleton<_i200.UpdateUserGoals>(
         () => _i200.UpdateUserGoals(gh<_i926.UserRepository>()));
-    gh.factory<_i348.OnboardingCubit>(() => _i348.OnboardingCubit(
-          gh<_i200.SaveUserProfile>(),
-          gh<InvalidType>(),
-        ));
     gh.lazySingleton<_i490.NotificationManager>(() => _i490.NotificationManager(
           gh<_i860.NotificationService>(),
           gh<_i367.NotificationRepository>(),
@@ -172,8 +165,20 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i200.GetUserProfile>(),
           gh<_i200.SaveUserProfile>(),
         ));
+    gh.factory<_i996.BarcodeScannerBloc>(
+        () => _i996.BarcodeScannerBloc(gh<_i780.FoodRepository>()));
+    gh.factory<_i214.FoodSearchBloc>(
+        () => _i214.FoodSearchBloc(gh<_i780.FoodRepository>()));
+    gh.factory<_i27.RecipeBuilderBloc>(
+        () => _i27.RecipeBuilderBloc(gh<_i780.FoodRepository>()));
     gh.factory<_i149.MealLogBloc>(
         () => _i149.MealLogBloc(gh<_i118.MealRepository>()));
+    gh.factory<_i348.OnboardingCubit>(() => _i348.OnboardingCubit(
+          gh<_i200.SaveUserProfile>(),
+          gh<_i171.GeminiKeyService>(),
+        ));
     return this;
   }
 }
+
+class _$RegisterModule extends _i464.RegisterModule {}

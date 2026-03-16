@@ -46,6 +46,7 @@ class _CustomFoodScreenState extends State<CustomFoodScreen> {
             ],
           ),
         );
+        if (!context.mounted) return;
         if (proceed != true) return;
       }
 
@@ -63,12 +64,15 @@ class _CustomFoodScreenState extends State<CustomFoodScreen> {
         isCustom: true,
       );
 
-      final result = await context.read<FoodRepository>().saveCustomFood(food);
+      final scaffold = context;
+      final repo = scaffold.read<FoodRepository>();
+      final result = await repo.saveCustomFood(food);
+      if (!scaffold.mounted) return;
       result.fold(
-        (failure) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message))),
+        (failure) => ScaffoldMessenger.of(scaffold).showSnackBar(SnackBar(content: Text(failure.message))),
         (_) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Food saved successfully!')));
-          Navigator.pop(context);
+          ScaffoldMessenger.of(scaffold).showSnackBar(const SnackBar(content: Text('Food saved successfully!')));
+          Navigator.of(scaffold).pop();
         },
       );
     }
@@ -109,7 +113,7 @@ class _CustomFoodScreenState extends State<CustomFoodScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: _servingUnit,
+                      initialValue: _servingUnit,
                       decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
                       items: ['g', 'ml', 'piece', 'serving', 'cup']
                           .map((u) => DropdownMenuItem(value: u, child: Text(u)))
@@ -140,7 +144,7 @@ class _CustomFoodScreenState extends State<CustomFoodScreen> {
               ),
               const SizedBox(height: 24),
               DropdownButtonFormField<String>(
-                value: _category,
+                initialValue: _category,
                 decoration: const InputDecoration(labelText: 'Tag As', border: OutlineInputBorder()),
                 items: ['Home Recipe', 'Restaurant', 'Packaged']
                     .map((t) => DropdownMenuItem(value: t, child: Text(t)))

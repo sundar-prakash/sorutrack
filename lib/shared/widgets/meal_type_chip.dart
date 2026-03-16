@@ -17,8 +17,7 @@ class MealTypeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    
+
     Color getBaseColor() {
       switch (type) {
         case MealType.breakfast:
@@ -44,9 +43,9 @@ class MealTypeChip extends StatelessWidget {
           return '🍎';
       }
     }
-    
+
     final baseColor = getBaseColor();
-    final bgColor = isSelected ? baseColor : baseColor.withOpacity(0.1);
+    final bgColor = isSelected ? baseColor : baseColor.withValues(alpha: 0.1);
     final textColor = isSelected ? Colors.white : baseColor;
 
     return Semantics(
@@ -70,7 +69,8 @@ class MealTypeChip extends StatelessWidget {
                   type.name[0].toUpperCase() + type.name.substring(1),
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: textColor,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ],

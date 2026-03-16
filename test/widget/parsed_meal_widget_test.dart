@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorutrack_pro/features/meal_log/presentation/bloc/meal_log_bloc.dart';
-import 'package:sorutrack_pro/features/meal_log/presentation/bloc/meal_log_event.dart';
+
 import 'package:sorutrack_pro/features/meal_log/presentation/bloc/meal_log_state.dart';
 import 'package:sorutrack_pro/features/meal_log/presentation/screens/parsed_results_screen.dart';
 import 'package:sorutrack_pro/features/meal_log/domain/models/parsed_meal.dart';

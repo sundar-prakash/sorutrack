@@ -7,17 +7,16 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      primaryColor: AppColors.primary,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.accent,
         tertiary: AppColors.primaryLight,
         error: AppColors.error,
         surface: AppColors.surfaceLight,
-        background: AppColors.backgroundLight,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: AppColors.textHighEmphasisLight,
-        onBackground: AppColors.textHighEmphasisLight,
         onError: Colors.white,
       ),
       scaffoldBackgroundColor: AppColors.backgroundLight,
@@ -29,7 +28,7 @@ class AppTheme {
         centerTitle: true,
         titleTextStyle: AppTypography.headline.copyWith(color: AppColors.textHighEmphasisLight),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
         elevation: 0, // Using subtle borders or shadows instead in M3 typically
         shape: RoundedRectangleBorder(
@@ -112,17 +111,16 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      primaryColor: AppColors.primaryLight,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.primaryLight, // Slightly lighter primary for dark mode visibility
+        primary: AppColors.primaryLight,
         secondary: AppColors.accent,
         tertiary: AppColors.primary,
         error: AppColors.error,
         surface: AppColors.surfaceDark,
-        background: AppColors.backgroundDark,
         onPrimary: AppColors.textHighEmphasisDark,
         onSecondary: AppColors.textHighEmphasisDark,
         onSurface: AppColors.textHighEmphasisDark,
-        onBackground: AppColors.textHighEmphasisDark,
         onError: AppColors.textHighEmphasisDark,
       ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
@@ -134,7 +132,7 @@ class AppTheme {
         centerTitle: true,
         titleTextStyle: AppTypography.headline.copyWith(color: AppColors.textHighEmphasisDark),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(

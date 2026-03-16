@@ -24,6 +24,7 @@ dependencies:
   # Database
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+1
+  sqflite_common_ffi_web: ^1.1.1
   drift: ^2.14.1
 
   # Networking
@@ -34,17 +35,18 @@ dependencies:
 
   # Charts & Visualization
   fl_chart: ^1.2.0
-  syncfusion_flutter_charts: ^32.2.9
+  syncfusion_flutter_charts: ^28.1.33
 
   # Notifications
   flutter_local_notifications: ^21.0.0
   timezone: ^0.11.0
 
   # Import/Export
+  path: ^1.9.0
   path_provider: ^2.1.2
   file_picker: ^10.3.10
   share_plus: ^12.0.1
-  csv: ^7.2.0
+  csv: ^6.0.0
   excel: ^4.0.2
   pdf: ^3.10.8
   printing: ^5.11.1
@@ -61,6 +63,8 @@ dependencies:
 
   # Storage
   flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.2
+  hydrated_bloc: ^10.1.1
 
   # Gamification
   confetti: ^0.8.0

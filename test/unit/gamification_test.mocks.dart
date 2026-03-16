@@ -8,7 +8,6 @@ import 'dart:async' as _i4;
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:sorutrack_pro/core/error/failures.dart' as _i5;
-import 'package:sorutrack_pro/core/services/home_widget_service.dart' as _i7;
 import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart'
     as _i6;
 import 'package:sorutrack_pro/features/gamification/domain/repositories/gamification_repository.dart'
@@ -247,33 +246,4 @@ class MockGamificationRepository extends _i1.Mock
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, void>>);
-}
-
-/// A class which mocks [HomeWidgetService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockHomeWidgetService extends _i1.Mock implements _i7.HomeWidgetService {
-  MockHomeWidgetService() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i4.Future<void> updateWidget({
-    required double? caloriesConsumed,
-    required double? calorieTarget,
-    required int? streak,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #updateWidget,
-          [],
-          {
-            #caloriesConsumed: caloriesConsumed,
-            #calorieTarget: calorieTarget,
-            #streak: streak,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
 }

@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
-import '../../domain/entities/food_item.dart';
-import '../../domain/entities/recipe_ingredient.dart';
-import '../../domain/repositories/food_repository.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/recipe_ingredient.dart';
+import 'package:sorutrack_pro/features/food/domain/repositories/food_repository.dart';
 
 part 'recipe_builder_event.dart';
 part 'recipe_builder_state.dart';

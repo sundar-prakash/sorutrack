@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:animate_do/animate_do.dart';
-import '../bloc/data_management_bloc.dart';
-import '../../../../shared/widgets/app_card.dart'; // Assuming common widgets exist
+import 'package:sorutrack_pro/features/data_management/presentation/bloc/data_management_bloc.dart';
 
 class DataManagementScreen extends StatefulWidget {
   const DataManagementScreen({super.key});
@@ -86,7 +85,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                         subtitle: const Text('Backs up to local storage every midnight'),
                         value: true,
                         onChanged: (val) {},
-                        secondary: const Icon(Icons.auto_history),
+                        secondary: const Icon(Icons.history),
                       ),
                     ],
                   ),
@@ -119,13 +118,15 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                         title: 'Restore from File',
                         subtitle: 'Restore database from .db or .SoruTackbackup',
                         onTap: () async {
+                          final scaffold = context;
                           final result = await FilePicker.platform.pickFiles();
+                          if (!scaffold.mounted) return;
                           if (result != null) {
                             final file = File(result.files.single.path!);
                             if (file.path.endsWith('.SoruTackbackup')) {
                                // Request password
                             } else {
-                               context.read<DataManagementBloc>().add(RestoreBackupRequested(file));
+                               scaffold.read<DataManagementBloc>().add(RestoreBackupRequested(file));
                             }
                           }
                         },
@@ -192,7 +193,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.withOpacity(0.1)),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -222,7 +223,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: Theme.of(context).primaryColor),
@@ -253,7 +254,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
 
   Future<void> _pickAndImport(BuildContext context, String type) async {
     final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
-    if (result != null) {
+    if (result != null && context.mounted) {
       final file = File(result.files.single.path!);
       context.read<DataManagementBloc>().add(ImportDataRequested('user_123', file, type));
     }

@@ -1,7 +1,11 @@
 import 'package:workmanager/workmanager.dart';
-import '../../features/data_management/data/services/backup_service.dart';
-import '../../core/database/database_helper.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
+import 'package:sorutrack_pro/features/data_management/data/services/backup_service.dart';
+import 'package:sorutrack_pro/features/notifications/data/services/notification_service.dart';
+import 'package:sorutrack_pro/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:sorutrack_pro/features/notifications/domain/managers/notification_manager.dart';
+import 'package:flutter/foundation.dart';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
@@ -56,6 +60,7 @@ class BackgroundTaskService {
   static const String smartAlertTask = "com.SoruTrack.smartAlerts";
 
   static Future<void> init() async {
+    if (kIsWeb) return;
     await Workmanager().initialize(
       callbackDispatcher,
       isInDebugMode: false,
@@ -63,6 +68,7 @@ class BackgroundTaskService {
   }
 
   static Future<void> scheduleSmartAlerts(String userId) async {
+    if (kIsWeb) return;
     await Workmanager().registerPeriodicTask(
       "2",
       smartAlertTask,
@@ -75,6 +81,7 @@ class BackgroundTaskService {
   }
 
   static Future<void> scheduleAutoBackup(Duration frequency) async {
+    if (kIsWeb) return;
     await Workmanager().registerPeriodicTask(
       "1",
       autoBackupTask,

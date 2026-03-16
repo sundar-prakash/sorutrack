@@ -67,17 +67,21 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
                   FadeInDown(
                     child: Text(
                       _currentMeal.mealName,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Confidence: ${(_currentMeal.confidenceScore * 100).toInt()}%'),
+                  Text(
+                      'Confidence: ${(_currentMeal.confidenceScore * 100).toInt()}%'),
                   const SizedBox(height: 24),
                   ..._currentMeal.items.asMap().entries.map((entry) {
                     final index = entry.key;
                     final item = entry.value;
                     return _buildFoodItemCard(item, index);
-                  }).toList(),
+                  }),
                   const SizedBox(height: 16),
                   TextButton.icon(
                     onPressed: () {
@@ -88,13 +92,20 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
                   ),
                   if (_currentMeal.warnings.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text('Warnings', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
-                    ..._currentMeal.warnings.map((w) => Text('• $w', style: const TextStyle(color: Colors.red))),
+                    const Text('Warnings',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red)),
+                    ..._currentMeal.warnings.map((w) => Text('• $w',
+                        style: const TextStyle(color: Colors.red))),
                   ],
                   if (_currentMeal.alternativesSuggested.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text('Suggestions', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-                    ..._currentMeal.alternativesSuggested.map((s) => Text('• $s', style: const TextStyle(color: Colors.blue))),
+                    const Text('Suggestions',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue)),
+                    ..._currentMeal.alternativesSuggested.map((s) => Text(
+                        '• $s',
+                        style: const TextStyle(color: Colors.blue))),
                   ],
                 ],
               ),
@@ -125,21 +136,32 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text(item.servingDescription, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                      Text(item.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(item.servingDescription,
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 12)),
                     ],
                   ),
                 ),
-                Text('${item.calories.toInt()} cal', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green)),
+                Text('${item.calories.toInt()} cal',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.green)),
               ],
             ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMacroPill('P', '${item.proteinG.toStringAsFixed(1)}g', Colors.blue),
-                _buildMacroPill('C', '${item.carbsG.toStringAsFixed(1)}g', Colors.orange),
-                _buildMacroPill('F', '${item.fatG.toStringAsFixed(1)}g', Colors.red),
+                _buildMacroPill(
+                    'P', '${item.proteinG.toStringAsFixed(1)}g', Colors.blue),
+                _buildMacroPill(
+                    'C', '${item.carbsG.toStringAsFixed(1)}g', Colors.orange),
+                _buildMacroPill(
+                    'F', '${item.fatG.toStringAsFixed(1)}g', Colors.red),
               ],
             ),
             const Divider(height: 32),
@@ -153,7 +175,8 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
                         onPressed: () {
                           // Update quantity logic
                         }),
-                    Text('${item.quantity} ${item.unit}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text('${item.quantity} ${item.unit}',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     IconButton(
                         icon: const Icon(Icons.add_circle_outline),
                         onPressed: () {
@@ -174,11 +197,13 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
-      child: Text('$label: $value', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+      child: Text('$label: $value',
+          style: TextStyle(
+              color: color, fontWeight: FontWeight.bold, fontSize: 12)),
     );
   }
 
@@ -187,7 +212,12 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5))
+        ],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -196,10 +226,14 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildSummaryItem('Calories', '${_currentMeal.totalCalories.toInt()}', 'kcal'),
-              _buildSummaryItem('Protein', '${_currentMeal.totalProteinG.toInt()}', 'g'),
-              _buildSummaryItem('Carbs', '${_currentMeal.totalCarbsG.toInt()}', 'g'),
-              _buildSummaryItem('Fat', '${_currentMeal.totalFatG.toInt()}', 'g'),
+              _buildSummaryItem(
+                  'Calories', '${_currentMeal.totalCalories.toInt()}', 'kcal'),
+              _buildSummaryItem(
+                  'Protein', '${_currentMeal.totalProteinG.toInt()}', 'g'),
+              _buildSummaryItem(
+                  'Carbs', '${_currentMeal.totalCarbsG.toInt()}', 'g'),
+              _buildSummaryItem(
+                  'Fat', '${_currentMeal.totalFatG.toInt()}', 'g'),
             ],
           ),
           const SizedBox(height: 24),
@@ -211,14 +245,17 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28)),
               ),
-              child: const Text('SAVE TO LOG', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: const Text('SAVE TO LOG',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ),
           TextButton(
             onPressed: () {},
-            child: const Text('Looks wrong? Re-parse meal', style: TextStyle(color: Colors.grey)),
+            child: const Text('Looks wrong? Re-parse meal',
+                style: TextStyle(color: Colors.grey)),
           ),
         ],
       ),
@@ -233,9 +270,12 @@ class _ParsedResultsScreenState extends State<ParsedResultsScreen> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            Text(value,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             const SizedBox(width: 2),
-            Text(unit, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+            Text(unit,
+                style: const TextStyle(fontSize: 10, color: Colors.grey)),
           ],
         ),
       ],

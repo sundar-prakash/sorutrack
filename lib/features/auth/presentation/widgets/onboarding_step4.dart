@@ -15,50 +15,56 @@ class OnboardingStep4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInRight(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'What is your Goal?',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "We will tailor your plan based on this.",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 32),
-            ...GoalType.values.map((goal) {
-              final isSelected = selectedGoal == goal;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: RadioListTile<GoalType>(
-                  value: goal,
-                  groupValue: selectedGoal,
-                  onChanged: (val) => onGoalChanged(val!),
-                  title: Text(
-                    goal.name.toUpperCase().replaceAll('_', ' '),
-                    style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? Theme.of(context).primaryColor : Colors.black,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'What is your Goal?',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
                     ),
-                  ),
-                  subtitle: Text(_getDescriptionForGoal(goal)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
-                    ),
-                  ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "We will tailor your plan based on this.",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 32),
+              RadioGroup<GoalType>(
+                groupValue: selectedGoal,
+                onChanged: (val) => onGoalChanged(val!),
+                child: Column(
+                  children: GoalType.values.map((goal) {
+                    final isSelected = selectedGoal == goal;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: RadioListTile<GoalType>(
+                        value: goal,
+                        title: Text(
+                          goal.name.toUpperCase().replaceAll('_', ' '),
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
+                        ),
+                        subtitle: Text(_getDescriptionForGoal(goal)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).dividerColor.withValues(alpha: 0.1),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-              );
-            }).toList(),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

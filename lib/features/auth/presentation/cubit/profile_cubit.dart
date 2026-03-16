@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/nutrition/nutrition_engine.dart';
-import '../../domain/models/user_profile.dart';
-import '../../domain/usecases/profile_use_cases.dart';
+import 'package:sorutrack_pro/core/nutrition/nutrition_engine.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/auth_enums.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/user_profile.dart';
+import 'package:sorutrack_pro/features/auth/domain/usecases/profile_use_cases.dart';
 
-part 'profile_state.freezed.dart';
+part 'profile_cubit.freezed.dart';
 
 @freezed
 abstract class ProfileState with _$ProfileState {
@@ -104,5 +105,15 @@ class ProfileCubit extends Cubit<ProfileState> {
         (_) => _calculateAndEmit(updatedProfile),
       );
     }
+  }
+
+  Future<void> updateProfile(UserProfile updatedProfile) async {
+    emit(const ProfileState.loading());
+    final result = await _saveUserProfile(updatedProfile);
+    
+    result.fold(
+      (failure) => emit(ProfileState.error(failure.message)),
+      (_) => _calculateAndEmit(updatedProfile),
+    );
   }
 }

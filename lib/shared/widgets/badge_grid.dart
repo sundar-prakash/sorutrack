@@ -52,10 +52,12 @@ class _BadgeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Semantics(
       label: 'Badge: ${badge.title}',
-      hint: badge.isUnlocked ? 'Unlocked. ${badge.description}' : 'Locked. ${badge.description}',
+      hint: badge.isUnlocked
+          ? 'Unlocked. ${badge.description}'
+          : 'Locked. ${badge.description}',
       child: Tooltip(
         message: '${badge.title}\n${badge.description}',
         child: Material(
@@ -74,22 +76,25 @@ class _BadgeCard extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: badge.isUnlocked 
-                          ? theme.colorScheme.primaryContainer 
-                          : theme.colorScheme.surfaceVariant,
+                      color: badge.isUnlocked
+                          ? theme.colorScheme.primaryContainer
+                          : theme.colorScheme.surfaceContainerHighest,
                       border: Border.all(
-                        color: badge.isUnlocked 
-                            ? theme.colorScheme.primary 
-                            : theme.colorScheme.outline.withOpacity(0.5),
+                        color: badge.isUnlocked
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outline.withValues(alpha: 0.5),
                         width: badge.isUnlocked ? 2 : 1,
                       ),
-                      boxShadow: badge.isUnlocked ? [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ] : null,
+                      boxShadow: badge.isUnlocked
+                          ? [
+                              BoxShadow(
+                                color: theme.colorScheme.primary
+                                    .withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Opacity(
                       opacity: badge.isUnlocked ? 1.0 : 0.3,
@@ -104,8 +109,12 @@ class _BadgeCard extends StatelessWidget {
                   Text(
                     badge.title,
                     style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: badge.isUnlocked ? FontWeight.bold : FontWeight.normal,
-                      color: badge.isUnlocked ? null : theme.colorScheme.onSurface.withOpacity(0.5),
+                      fontWeight: badge.isUnlocked
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: badge.isUnlocked
+                          ? null
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,

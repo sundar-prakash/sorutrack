@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:excel/excel.dart';
-import 'package:pdf/pdf.dart';
+
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/database/database_helper.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
 
 @lazySingleton
 class ExportService {
@@ -68,19 +68,29 @@ class ExportService {
 
     List<List<dynamic>> rows = [];
     // Header
-    rows.add(['Date', 'Meal Type', 'Food Name', 'Quantity', 'Unit', 'Calories', 'Protein', 'Carbs', 'Fat']);
+    rows.add([
+      TextCellValue('Date'), 
+      TextCellValue('Meal Type'), 
+      TextCellValue('Food Name'), 
+      TextCellValue('Quantity'), 
+      TextCellValue('Unit'), 
+      TextCellValue('Calories'), 
+      TextCellValue('Protein'), 
+      TextCellValue('Carbs'), 
+      TextCellValue('Fat')
+    ]);
     
     for (var meal in meals) {
       rows.add([
-        meal['meal_time'],
-        meal['meal_type'],
-        meal['food_name'],
-        meal['quantity'],
-        meal['unit'],
-        meal['calories'],
-        meal['protein'],
-        meal['carbs'],
-        meal['fat'],
+        TextCellValue(meal['meal_time'].toString()),
+        TextCellValue(meal['meal_type'].toString()),
+        TextCellValue(meal['food_name'].toString()),
+        DoubleCellValue(double.tryParse(meal['quantity'].toString()) ?? 0.0),
+        TextCellValue(meal['unit'].toString()),
+        DoubleCellValue(double.tryParse(meal['calories'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(meal['protein'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(meal['carbs'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(meal['fat'].toString()) ?? 0.0),
       ]);
     }
 
@@ -101,15 +111,22 @@ class ExportService {
     final db = await _dbHelper.database;
     final dailyLogs = await db.query('daily_logs', where: 'user_id = ?', whereArgs: [userId]);
     
-    dailySheet.appendRow(['Date', 'Calories', 'Protein', 'Carbs', 'Fat', 'Water (ml)']);
+    dailySheet.appendRow([
+      TextCellValue('Date'),
+      TextCellValue('Calories'),
+      TextCellValue('Protein'),
+      TextCellValue('Carbs'),
+      TextCellValue('Fat'),
+      TextCellValue('Water (ml)')
+    ]);
     for (var log in dailyLogs) {
       dailySheet.appendRow([
-        log['date'],
-        log['total_calories'],
-        log['total_protein'],
-        log['total_carbs'],
-        log['total_fat'],
-        log['water_intake'],
+        TextCellValue(log['date'].toString()),
+        DoubleCellValue(double.tryParse(log['total_calories'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(log['total_protein'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(log['total_carbs'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(log['total_fat'].toString()) ?? 0.0),
+        IntCellValue(int.tryParse(log['water_intake'].toString()) ?? 0),
       ]);
     }
 
@@ -124,34 +141,52 @@ class ExportService {
       WHERE m.user_id = ? AND m.deleted_at IS NULL AND mi.deleted_at IS NULL
     ''', [userId]);
 
-    mealSheet.appendRow(['Time', 'Type', 'Food', 'Qty', 'Unit', 'Cal', 'P', 'C', 'F']);
+    mealSheet.appendRow([
+      TextCellValue('Time'),
+      TextCellValue('Type'),
+      TextCellValue('Food'),
+      TextCellValue('Qty'),
+      TextCellValue('Unit'),
+      TextCellValue('Cal'),
+      TextCellValue('P'),
+      TextCellValue('C'),
+      TextCellValue('F')
+    ]);
     for (var m in mealDetails) {
        mealSheet.appendRow([
-        m['meal_time'],
-        m['meal_type'],
-        m['food_name'],
-        m['quantity'],
-        m['unit'],
-        m['calories'],
-        m['protein'],
-        m['carbs'],
-        m['fat'],
+        TextCellValue(m['meal_time'].toString()),
+        TextCellValue(m['meal_type'].toString()),
+        TextCellValue(m['food_name'].toString()),
+        DoubleCellValue(double.tryParse(m['quantity'].toString()) ?? 0.0),
+        TextCellValue(m['unit'].toString()),
+        DoubleCellValue(double.tryParse(m['calories'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(m['protein'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(m['carbs'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(m['fat'].toString()) ?? 0.0),
       ]);
     }
 
     // Sheet 3: Food Database
     final foodSheet = excel['Food Database'];
     final foods = await db.query('food_items');
-    foodSheet.appendRow(['Name', 'Brand', 'Calories', 'Protein', 'Carbs', 'Fat', 'Serving']);
+    foodSheet.appendRow([
+      TextCellValue('Name'),
+      TextCellValue('Brand'),
+      TextCellValue('Calories'),
+      TextCellValue('Protein'),
+      TextCellValue('Carbs'),
+      TextCellValue('Fat'),
+      TextCellValue('Serving')
+    ]);
     for (var f in foods) {
       foodSheet.appendRow([
-        f['name'],
-        f['brand'],
-        f['calories'],
-        f['protein'],
-        f['carbs'],
-        f['fat'],
-        '${f['serving_size']} ${f['serving_unit']}',
+        TextCellValue(f['name'].toString()),
+        TextCellValue(f['brand']?.toString() ?? ''),
+        DoubleCellValue(double.tryParse(f['calories'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(f['protein'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(f['carbs'].toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(f['fat'].toString()) ?? 0.0),
+        TextCellValue('${f['serving_size']} ${f['serving_unit']}'),
       ]);
     }
 
@@ -189,7 +224,7 @@ class ExportService {
             pw.Header(level: 0, child: pw.Text('SoruTrack Pro - Nutrition Report')),
             pw.Paragraph(text: 'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}'),
             pw.SizedBox(height: 20),
-            pw.Table.fromTextArray(
+            pw.TableHelper.fromTextArray(
               context: context,
               data: [
                 ['Date', 'Cal', 'Prot', 'Carb', 'Fat', 'Water'],
@@ -217,6 +252,6 @@ class ExportService {
   }
 
   Future<void> shareFile(String filePath) async {
-    await Share.shareXFiles([XFile(filePath)], text: 'Exported from SoruTrack Pro');
+    await SharePlus.instance.share(ShareParams(files: [XFile(filePath)], text: 'Exported from SoruTrack Pro'));
   }
 }

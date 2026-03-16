@@ -9,29 +9,29 @@ sealed class Failure extends Equatable {
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure([String message = 'Server failure occurred']) : super(message);
+  const ServerFailure([super.message = 'Server failure occurred']);
 }
 
 class DatabaseFailure extends Failure {
-  const DatabaseFailure([String message = 'Database failure occurred']) : super(message);
+  const DatabaseFailure([super.message = 'Database failure occurred']);
 }
 
 class CacheFailure extends Failure {
-  const CacheFailure([String message = 'Cache failure occurred']) : super(message);
+  const CacheFailure([super.message = 'Cache failure occurred']);
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure([String message = 'No internet connection']) : super(message);
+  const NetworkFailure([super.message = 'No internet connection']);
 }
 
 class ValidationFailure extends Failure {
-  const ValidationFailure(String message) : super(message);
+  const ValidationFailure(super.message);
 }
 
 class AuthFailure extends Failure {
-  const AuthFailure([String message = 'Authentication failed']) : super(message);
+  const AuthFailure([super.message = 'Authentication failed']);
 }
 
 class GeminiFailure extends Failure {
-  const GeminiFailure([String message = 'Gemini AI processing failed']) : super(message);
+  const GeminiFailure([super.message = 'Gemini AI processing failed']);
 }

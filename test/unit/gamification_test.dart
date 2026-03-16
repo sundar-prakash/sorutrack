@@ -4,22 +4,19 @@ import 'package:mockito/mockito.dart';
 import 'package:dartz/dartz.dart';
 import 'package:sorutrack_pro/features/gamification/domain/services/gamification_service.dart';
 import 'package:sorutrack_pro/features/gamification/domain/repositories/gamification_repository.dart';
-import 'package:sorutrack_pro/core/services/home_widget_service.dart';
-import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart';
+
 import 'package:sorutrack_pro/features/gamification/domain/models/level_system.dart';
 
 import 'gamification_test.mocks.dart';
 
-@GenerateMocks([GamificationRepository, HomeWidgetService])
+@GenerateMocks([GamificationRepository])
 void main() {
   late GamificationService service;
   late MockGamificationRepository mockRepository;
-  late MockHomeWidgetService mockHomeWidgetService;
 
   setUp(() {
     mockRepository = MockGamificationRepository();
-    mockHomeWidgetService = MockHomeWidgetService();
-    service = GamificationService(mockRepository, mockHomeWidgetService);
+    service = GamificationService(mockRepository);
   });
 
   group('Gamification Tests', () {

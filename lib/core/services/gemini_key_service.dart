@@ -42,7 +42,7 @@ class GeminiKeyService {
     try {
       // Make a minimal test call to Gemini
       final response = await Dio().post(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent',
         data: {
           "contents": [
             {
@@ -54,6 +54,10 @@ class GeminiKeyService {
           "generationConfig": {"maxOutputTokens": 10}
         },
         options: Options(
+          headers: {
+            'X-goog-api-key': apiKey,
+            'Content-Type': 'application/json',
+          },
           sendTimeout: const Duration(seconds: 8),
           receiveTimeout: const Duration(seconds: 8),
         ),
@@ -62,7 +66,11 @@ class GeminiKeyService {
       if (response.statusCode == 200) return ApiKeyValidationResult.valid;
       return ApiKeyValidationResult.invalid;
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) return ApiKeyValidationResult.invalid;
+      if (e.response?.statusCode == 400 || 
+          e.response?.statusCode == 401 || 
+          e.response?.statusCode == 404) {
+        return ApiKeyValidationResult.invalid;
+      }
       if (e.response?.statusCode == 429) return ApiKeyValidationResult.rateLimited;
       return ApiKeyValidationResult.networkError;
     } catch (_) {

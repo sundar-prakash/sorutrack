@@ -19,9 +19,8 @@ class XPProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double percentage = targetXP > 0 
-        ? (currentXP / targetXP).clamp(0.0, 1.0) 
-        : 0.0;
+    final double percentage =
+        targetXP > 0 ? (currentXP / targetXP).clamp(0.0, 1.0) : 0.0;
 
     return Semantics(
       label: 'Level $currentLevel, $currentXP out of $targetXP XP',
@@ -43,7 +42,7 @@ class XPProgressBar extends StatelessWidget {
                 '$currentXP / $targetXP XP',
                 style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface.withOpacity(0.8),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -52,7 +51,7 @@ class XPProgressBar extends StatelessWidget {
           Container(
             height: height,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(height / 2),
             ),
             child: LayoutBuilder(
@@ -72,7 +71,7 @@ class XPProgressBar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(height / 2),
                             boxShadow: [
                               BoxShadow(
-                                color: color.withOpacity(0.6),
+                                color: color.withValues(alpha: 0.6),
                                 blurRadius: 8,
                                 spreadRadius: -1,
                                 offset: const Offset(0, 0), // Glow effect

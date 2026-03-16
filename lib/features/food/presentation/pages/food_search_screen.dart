@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/food_search/food_search_bloc.dart';
-import '../bloc/barcode_scanner/barcode_scanner_bloc.dart';
-import 'barcode_scanner_screen.dart';
-import 'food_detail_screen.dart';
-import 'recipe_builder_screen.dart';
-import 'custom_food_screen.dart';
+import 'package:sorutrack_pro/features/food/presentation/bloc/food_search/food_search_bloc.dart';
+import 'package:sorutrack_pro/features/food/presentation/pages/barcode_scanner_screen.dart';
+import 'package:sorutrack_pro/features/food/presentation/pages/food_detail_screen.dart';
+import 'package:sorutrack_pro/features/food/presentation/pages/recipe_builder_screen.dart';
+import 'package:sorutrack_pro/features/food/presentation/pages/custom_food_screen.dart';
 
 class FoodSearchScreen extends StatefulWidget {
   final String? mealType;
@@ -157,7 +156,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.search_off, size: 64, color: Colors.grey),
+          Icon(Icons.search_off, size: 64, color: Theme.of(context).disabledColor),
           const SizedBox(height: 16),
           const Text('No foods found.'),
           TextButton(

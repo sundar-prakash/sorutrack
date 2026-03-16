@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:animate_do/animate_do.dart';
 import '../../domain/models/notification_settings.dart';
 import '../../domain/repositories/notification_repository.dart';
@@ -11,10 +11,12 @@ class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   late NotificationSettings _settings;
   bool _isLoading = true;
   final String _userId = 'current_user'; // Should be dynamic
@@ -38,7 +40,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() => _settings = newSettings);
     final repository = getIt<NotificationRepository>();
     final manager = getIt<NotificationManager>();
-    
+
     await repository.saveSettings(_userId, newSettings);
     await manager.rescheduleAll(_userId);
   }
@@ -77,7 +79,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 title: 'Meal Reminders',
                 icon: Icons.restaurant,
                 enabled: _settings.mealRemindersEnabled,
-                onToggle: (val) => _saveSettings(_settings.copyWith(mealRemindersEnabled: val)),
+                onToggle: (val) => _saveSettings(
+                    _settings.copyWith(mealRemindersEnabled: val)),
                 children: [
                   _buildTimeTile('Breakfast', _settings.breakfastTime, (time) {
                     _saveSettings(_settings.copyWith(breakfastTime: time));
@@ -98,20 +101,30 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 title: 'Water Reminders',
                 icon: Icons.water_drop,
                 enabled: _settings.waterRemindersEnabled,
-                onToggle: (val) => _saveSettings(_settings.copyWith(waterRemindersEnabled: val)),
+                onToggle: (val) => _saveSettings(
+                    _settings.copyWith(waterRemindersEnabled: val)),
                 children: [
-                   ListTile(
+                  ListTile(
                     title: const Text('Reminder Interval'),
                     trailing: DropdownButton<int>(
                       value: _settings.waterIntervalHours,
-                      items: [1, 2, 3].map((h) => DropdownMenuItem(value: h, child: Text('$h hour${h > 1 ? 's' : ''}'))).toList(),
-                      onChanged: (val) => val != null ? _saveSettings(_settings.copyWith(waterIntervalHours: val)) : null,
+                      items: [1, 2, 3]
+                          .map((h) => DropdownMenuItem(
+                              value: h,
+                              child: Text('$h hour${h > 1 ? 's' : ''}')))
+                          .toList(),
+                      onChanged: (val) => val != null
+                          ? _saveSettings(
+                              _settings.copyWith(waterIntervalHours: val))
+                          : null,
                     ),
                   ),
-                  _buildTimeTile('Wake Up Time', _settings.sleepEndTime, (time) {
+                  _buildTimeTile('Wake Up Time', _settings.sleepEndTime,
+                      (time) {
                     _saveSettings(_settings.copyWith(sleepEndTime: time));
                   }),
-                  _buildTimeTile('Sleep Time', _settings.sleepStartTime, (time) {
+                  _buildTimeTile('Sleep Time', _settings.sleepStartTime,
+                      (time) {
                     _saveSettings(_settings.copyWith(sleepStartTime: time));
                   }),
                 ],
@@ -125,7 +138,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 'Context-aware alerts for goals and missing logs',
                 Icons.smart_toy_outlined,
                 _settings.smartRemindersEnabled,
-                (val) => _saveSettings(_settings.copyWith(smartRemindersEnabled: val)),
+                (val) => _saveSettings(
+                    _settings.copyWith(smartRemindersEnabled: val)),
               ),
             ),
             _buildSettingsToggle(
@@ -133,21 +147,24 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               'Don\'t let your streak break!',
               Icons.fireplace,
               _settings.streakProtectionEnabled,
-              (val) => _saveSettings(_settings.copyWith(streakProtectionEnabled: val)),
+              (val) => _saveSettings(
+                  _settings.copyWith(streakProtectionEnabled: val)),
             ),
-             _buildSettingsToggle(
+            _buildSettingsToggle(
               'Achievements',
               'Badge unlocks and level ups',
               Icons.emoji_events,
               _settings.achievementsEnabled,
-              (val) => _saveSettings(_settings.copyWith(achievementsEnabled: val)),
+              (val) =>
+                  _saveSettings(_settings.copyWith(achievementsEnabled: val)),
             ),
-             _buildSettingsToggle(
+            _buildSettingsToggle(
               'Weekly Summary',
               'A wrap-up of your progress every Sunday',
               Icons.assessment,
               _settings.weeklySummaryEnabled,
-              (val) => _saveSettings(_settings.copyWith(weeklySummaryEnabled: val)),
+              (val) =>
+                  _saveSettings(_settings.copyWith(weeklySummaryEnabled: val)),
             ),
           ],
         ),
@@ -158,12 +175,16 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget _buildMasterToggle(ThemeData theme) {
     return Card(
       elevation: 0,
-      color: _settings.masterEnabled ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceVariant,
+      color: _settings.masterEnabled
+          ? theme.colorScheme.primaryContainer
+          : theme.colorScheme.surfaceContainerHighest,
       child: SwitchListTile(
-        title: const Text('Master Notification Toggle', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Master Notification Toggle',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: const Text('Enable or disable all app notifications'),
         value: _settings.masterEnabled,
-        onChanged: (val) => _saveSettings(_settings.copyWith(masterEnabled: val)),
+        onChanged: (val) =>
+            _saveSettings(_settings.copyWith(masterEnabled: val)),
       ),
     );
   }
@@ -180,7 +201,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       child: Column(
         children: [
           SwitchListTile(
-            title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(title,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             secondary: Icon(icon, color: enabled ? Colors.green : null),
             value: enabled,
             onChanged: onToggle,
@@ -191,7 +213,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
   }
 
-  Widget _buildSettingsToggle(String title, String subtitle, IconData icon, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildSettingsToggle(String title, String subtitle, IconData icon,
+      bool value, ValueChanged<bool> onChanged) {
     return ListTile(
       leading: Icon(icon, color: value ? Colors.blue : null),
       title: Text(title),
@@ -200,7 +223,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
   }
 
-  Widget _buildTimeTile(String title, String time, ValueChanged<String> onTimeSelected) {
+  Widget _buildTimeTile(
+      String title, String time, ValueChanged<String> onTimeSelected) {
     return ListTile(
       title: Text(title),
       trailing: TextButton(
@@ -208,14 +232,17 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           final parts = time.split(':');
           final selectedTime = await showTimePicker(
             context: context,
-            initialTime: TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1])),
+            initialTime: TimeOfDay(
+                hour: int.parse(parts[0]), minute: int.parse(parts[1])),
           );
-          if (selectedTime != null) {
-            final formattedTime = '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
+          if (selectedTime != null && context.mounted) {
+            final formattedTime =
+                '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
             onTimeSelected(formattedTime);
           }
         },
-        child: Text(time, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text(time,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -230,9 +257,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         body: "Checking if notifications are working beautifully.",
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Notification permissions are disabled.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Notification permissions are disabled.')),
+        );
+      }
     }
   }
 }

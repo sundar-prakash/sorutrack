@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../domain/models/gamification_models.dart';
-import '../../domain/repositories/gamification_repository.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart';
+import 'package:sorutrack_pro/features/gamification/domain/repositories/gamification_repository.dart';
 
 // Events
 abstract class GamificationEvent extends Equatable {

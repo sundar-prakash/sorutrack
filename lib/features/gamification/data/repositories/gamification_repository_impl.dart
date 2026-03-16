@@ -1,12 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../core/database/database_helper.dart';
-import '../../../../core/error/failures.dart';
-import '../models/gamification_models.dart';
-import '../models/level_system.dart';
-import '../repositories/gamification_repository.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
+import 'package:sorutrack_pro/core/error/failures.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/level_system.dart';
+import 'package:sorutrack_pro/features/gamification/domain/repositories/gamification_repository.dart';
 
 @LazySingleton(as: GamificationRepository)
 class GamificationRepositoryImpl implements GamificationRepository {

@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/food_item.dart';
-import '../../domain/repositories/food_repository.dart';
-import '../datasources/food_local_data_source.dart';
-import '../datasources/food_remote_data_source.dart';
+import 'package:sorutrack_pro/core/error/failures.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
+import 'package:sorutrack_pro/features/food/domain/repositories/food_repository.dart';
+import 'package:sorutrack_pro/features/food/data/datasources/food_local_data_source.dart';
+import 'package:sorutrack_pro/features/food/data/datasources/food_remote_data_source.dart';
 
 @LazySingleton(as: FoodRepository)
 class FoodRepositoryImpl implements FoodRepository {

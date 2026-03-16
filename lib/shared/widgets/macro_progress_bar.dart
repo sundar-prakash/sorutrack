@@ -21,9 +21,8 @@ class MacroProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double percentage = targetAmount > 0 
-        ? (currentAmount / targetAmount).clamp(0.0, 1.0) 
-        : 0.0;
+    final double percentage =
+        targetAmount > 0 ? (currentAmount / targetAmount).clamp(0.0, 1.0) : 0.0;
 
     return Semantics(
       label: '$label progress',
@@ -44,7 +43,7 @@ class MacroProgressBar extends StatelessWidget {
               Text(
                 '$currentAmount / ${targetAmount}g',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -53,7 +52,7 @@ class MacroProgressBar extends StatelessWidget {
           Container(
             height: height,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2), // Base color
+              color: color.withValues(alpha: 0.2), // Base color
               borderRadius: BorderRadius.circular(height / 2),
             ),
             child: LayoutBuilder(
@@ -73,7 +72,7 @@ class MacroProgressBar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(height / 2),
                             boxShadow: [
                               BoxShadow(
-                                color: color.withOpacity(0.4),
+                                color: color.withValues(alpha: 0.4),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),

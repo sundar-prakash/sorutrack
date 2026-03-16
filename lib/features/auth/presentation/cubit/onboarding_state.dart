@@ -8,7 +8,7 @@ abstract class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
     @Default(0) int currentStep,
     @Default('') String name,
-    @Default(25) int age,
+    DateTime? dateOfBirth,
     @Default(Gender.male) Gender gender,
     @Default(170) double height,
     @Default(HeightUnit.cm) HeightUnit heightUnit,

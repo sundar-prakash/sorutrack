@@ -10,7 +10,7 @@ import 'package:sorutrack_pro/features/meal_log/data/gemini_meal_service.dart';
 import 'package:sorutrack_pro/features/meal_log/domain/models/parsed_meal.dart';
 import 'package:sorutrack_pro/core/database/database_helper.dart';
 
-import 'app_test.mocks.dart';
+import 'integration_app_test.mocks.dart';
 
 @GenerateMocks([GeminiMealService])
 void main() {

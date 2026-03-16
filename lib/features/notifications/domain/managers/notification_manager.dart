@@ -1,6 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
-import 'package:intl/intl.dart';
+
 import '../models/notification_settings.dart';
 import '../repositories/notification_repository.dart';
 import '../../data/services/notification_service.dart';

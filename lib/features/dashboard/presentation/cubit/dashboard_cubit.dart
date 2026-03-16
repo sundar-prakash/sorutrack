@@ -48,6 +48,20 @@ class DashboardCubit extends Cubit<DashboardState> {
     );
   }
 
+  Future<void> addWater(int mlToAdd) async {
+    state.maybeWhen(
+      loaded: (data, date, _) async {
+        try {
+          await _repository.logWater('default_user', date, mlToAdd);
+          loadDashboard(date: date); // Reload to reflect changes
+        } catch (e) {
+          emit(DashboardState.error(e.toString()));
+        }
+      },
+      orElse: () {},
+    );
+  }
+
   void nextDay() {
     state.maybeWhen(
       loaded: (_, date, __) => loadDashboard(date: date.add(const Duration(days: 1))),

@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../domain/entities/food_item.dart';
-import '../../domain/repositories/food_repository.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
+import 'package:sorutrack_pro/features/food/domain/repositories/food_repository.dart';
 
 part 'food_search_event.dart';
 part 'food_search_state.dart';
@@ -21,7 +21,7 @@ class FoodSearchBloc extends Bloc<FoodSearchEvent, FoodSearchState> {
     on<LoadMoreResults>(_onLoadMoreResults);
   }
 
-  EventTransformer<SearchQueryChanged> _debounce<SearchQueryChanged>(Duration duration) {
+  EventTransformer<T> _debounce<T>(Duration duration) {
     return (events, mapper) => events.debounceTime(duration).switchMap(mapper);
   }
 

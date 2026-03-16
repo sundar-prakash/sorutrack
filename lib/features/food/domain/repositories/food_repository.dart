@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../entities/food_item.dart';
+import 'package:sorutrack_pro/core/error/failures.dart';
+import 'package:sorutrack_pro/features/food/domain/entities/food_item.dart';
 
 abstract class FoodRepository {
   Future<Either<Failure, List<FoodItem>>> searchFoods(String query, {List<String>? filters, String? sortBy, int limit = 20, int offset = 0});

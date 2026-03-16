@@ -61,14 +61,14 @@ class _NutriCalorieRingState extends State<NutriCalorieRing>
       final double targetPercentage = widget.targetCalories > 0
           ? (widget.consumedCalories / widget.targetCalories).clamp(0.0, 1.0)
           : 0.0;
-      
+
       _animation = Tween<double>(
         begin: _animation.value,
         end: targetPercentage,
       ).animate(
         CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
       );
-      
+
       _controller.forward(from: 0);
     }
   }
@@ -82,10 +82,11 @@ class _NutriCalorieRingState extends State<NutriCalorieRing>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Semantics(
       label: 'Daily Calories',
-      value: '${(widget.consumedCalories)}. of ${widget.targetCalories} kcal consumed',
+      value:
+          '${(widget.consumedCalories)}. of ${widget.targetCalories} kcal consumed',
       child: SizedBox(
         width: widget.size,
         height: widget.size,
@@ -112,7 +113,8 @@ class _NutriCalorieRingState extends State<NutriCalorieRing>
                 AnimatedBuilder(
                   animation: _animation,
                   builder: (context, child) {
-                    final displayValue = (_animation.value * widget.targetCalories).round();
+                    final displayValue =
+                        (_animation.value * widget.targetCalories).round();
                     return Text(
                       displayValue.toString(),
                       style: theme.textTheme.displayLarge?.copyWith(
@@ -126,7 +128,7 @@ class _NutriCalorieRingState extends State<NutriCalorieRing>
                 Text(
                   'of ${widget.targetCalories} kcal',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],

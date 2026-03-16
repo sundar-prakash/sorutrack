@@ -27,11 +27,13 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     return BlocConsumer<RecipeBuilderBloc, RecipeBuilderState>(
       listener: (context, state) {
         if (state.success) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recipe saved!')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Recipe saved!')));
           Navigator.pop(context);
         }
         if (state.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error!)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.error!)));
         }
       },
       builder: (context, state) {
@@ -49,7 +51,9 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: state.isSaving ? null : () => _showSaveDialog(context, state),
+                onPressed: state.isSaving
+                    ? null
+                    : () => _showSaveDialog(context, state),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(56),
                   backgroundColor: Theme.of(context).primaryColor,
@@ -57,7 +61,9 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
                 ),
                 child: state.isSaving
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Save Recipe', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    : const Text('Save Recipe',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -73,7 +79,8 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
         children: [
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Recipe Name', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+                labelText: 'Recipe Name', border: OutlineInputBorder()),
           ),
           const SizedBox(height: 16),
           Row(
@@ -81,27 +88,32 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
               Expanded(
                 child: TextField(
                   controller: _yieldController,
-                  decoration: const InputDecoration(labelText: 'Total Yield', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                      labelText: 'Total Yield', border: OutlineInputBorder()),
                   keyboardType: TextInputType.number,
                   onChanged: (v) {
                     final amount = double.tryParse(v) ?? 1;
-                    context.read<RecipeBuilderBloc>().add(UpdateRecipeYield(yieldAmount: amount, yieldUnit: _yieldUnit));
+                    context.read<RecipeBuilderBloc>().add(UpdateRecipeYield(
+                        yieldAmount: amount, yieldUnit: _yieldUnit));
                   },
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _yieldUnit,
-                  decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
+                  initialValue: _yieldUnit,
+                  decoration: const InputDecoration(
+                      labelText: 'Unit', border: OutlineInputBorder()),
                   items: ['serving', 'grams', 'bowl', 'portion']
                       .map((u) => DropdownMenuItem(value: u, child: Text(u)))
                       .toList(),
                   onChanged: (v) {
                     if (v != null) {
                       _yieldUnit = v;
-                      final amount = double.tryParse(_yieldController.text) ?? 1;
-                      context.read<RecipeBuilderBloc>().add(UpdateRecipeYield(yieldAmount: amount, yieldUnit: v));
+                      final amount =
+                          double.tryParse(_yieldController.text) ?? 1;
+                      context.read<RecipeBuilderBloc>().add(
+                          UpdateRecipeYield(yieldAmount: amount, yieldUnit: v));
                     }
                   },
                 ),
@@ -121,7 +133,8 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Ingredients', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const Text('Ingredients',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               TextButton.icon(
                 icon: const Icon(Icons.add),
                 label: const Text('Add'),
@@ -134,15 +147,20 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
-              child: Text('No ingredients added yet.', style: TextStyle(color: Colors.grey)),
+              child: Text('No ingredients added yet.',
+                  style: TextStyle(color: Colors.grey)),
             ),
           ),
         ...state.ingredients.map((ingredient) => ListTile(
               title: Text(ingredient.foodItem.name),
-              subtitle: Text('${ingredient.quantity}${ingredient.unit} • ${ingredient.calories.toInt()} kcal'),
+              subtitle: Text(
+                  '${ingredient.quantity}${ingredient.unit} • ${ingredient.calories.toInt()} kcal'),
               trailing: IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                onPressed: () => context.read<RecipeBuilderBloc>().add(RemoveIngredient(ingredient.id)),
+                icon:
+                    const Icon(Icons.remove_circle_outline, color: Colors.red),
+                onPressed: () => context
+                    .read<RecipeBuilderBloc>()
+                    .add(RemoveIngredient(ingredient.id)),
               ),
             )),
       ],
@@ -153,20 +171,29 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
-        border: const Border(top: BorderSide(color: Colors.divider)),
+        color: Colors.grey.withValues(alpha: 0.05),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       child: Column(
         children: [
-          const Text('Nutrition per serving', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text('Nutrition per serving',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _SummaryItem(label: 'Calories', value: '${state.caloriesPerServing.toInt()} kcal'),
-              _SummaryItem(label: 'Protein', value: '${state.proteinPerServing.toStringAsFixed(1)}g'),
-              _SummaryItem(label: 'Carbs', value: '${state.carbsPerServing.toStringAsFixed(1)}g'),
-              _SummaryItem(label: 'Fat', value: '${state.fatPerServing.toStringAsFixed(1)}g'),
+              _SummaryItem(
+                  label: 'Calories',
+                  value: '${state.caloriesPerServing.toInt()} kcal'),
+              _SummaryItem(
+                  label: 'Protein',
+                  value: '${state.proteinPerServing.toStringAsFixed(1)}g'),
+              _SummaryItem(
+                  label: 'Carbs',
+                  value: '${state.carbsPerServing.toStringAsFixed(1)}g'),
+              _SummaryItem(
+                  label: 'Fat',
+                  value: '${state.fatPerServing.toStringAsFixed(1)}g'),
             ],
           ),
         ],
@@ -187,10 +214,13 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
 
   void _showSaveDialog(BuildContext context, RecipeBuilderState state) {
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a recipe name')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a recipe name')));
       return;
     }
-    context.read<RecipeBuilderBloc>().add(SaveRecipe(name: _nameController.text));
+    context
+        .read<RecipeBuilderBloc>()
+        .add(SaveRecipe(name: _nameController.text));
   }
 }
 

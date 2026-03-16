@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../services/export_service.dart';
-import '../services/import_service.dart';
-import '../services/backup_service.dart';
+import 'package:sorutrack_pro/features/data_management/data/services/export_service.dart';
+import 'package:sorutrack_pro/features/data_management/data/services/import_service.dart';
+import 'package:sorutrack_pro/features/data_management/data/services/backup_service.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
 
 // Events
 abstract class DataManagementEvent extends Equatable {
@@ -36,6 +37,8 @@ class ImportDataRequested extends DataManagementEvent {
   final Map<String, String>? mapping;
   ImportDataRequested(this.userId, this.file, this.type, {this.mapping});
 }
+
+class ClearAllDataRequested extends DataManagementEvent {}
 
 // State
 abstract class DataManagementState extends Equatable {
@@ -73,6 +76,7 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
     on<CreateBackupRequested>(_onCreateBackupRequested);
     on<RestoreBackupRequested>(_onRestoreBackupRequested);
     on<ImportDataRequested>(_onImportRequested);
+    on<ClearAllDataRequested>(_onClearAllDataRequested);
   }
 
   Future<void> _onExportRequested(ExportDataRequested event, Emitter<DataManagementState> emit) async {
@@ -138,6 +142,17 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
       
       final result = await _importService.importData(event.userId, data);
       emit(DataManagementSuccess('Imported ${result.imported} logs. Errors: ${result.errors}'));
+    } catch (e) {
+      emit(DataManagementFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onClearAllDataRequested(ClearAllDataRequested event, Emitter<DataManagementState> emit) async {
+    emit(DataManagementLoading('Clearing all data...'));
+    try {
+      final dbHelper = DatabaseHelper();
+      await dbHelper.clearAllData();
+      emit(DataManagementSuccess('All data cleared successfully. Please restart the app.'));
     } catch (e) {
       emit(DataManagementFailure(e.toString()));
     }

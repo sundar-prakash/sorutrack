@@ -27,13 +27,15 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.foodItem.name),
         actions: [
           IconButton(
-            icon: Icon(widget.foodItem.isFavorite ? Icons.favorite : Icons.favorite_border),
+            icon: Icon(widget.foodItem.isFavorite
+                ? Icons.favorite
+                : Icons.favorite_border),
             color: widget.foodItem.isFavorite ? Colors.red : null,
             onPressed: () {},
           ),
@@ -64,7 +66,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               foregroundColor: Colors.white,
             ),
             onPressed: () => _showMealSelector(context),
-            child: const Text('Add to Meal', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: const Text('Add to Meal',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
         ),
       ),
@@ -76,13 +79,14 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.primaryColor.withOpacity(0.1),
+        color: theme.primaryColor.withValues(alpha: 0.1),
       ),
       child: Column(
         children: [
           Text(
             widget.foodItem.name,
-            style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           if (widget.foodItem.brand != null)
             Text(widget.foodItem.brand!, style: theme.textTheme.titleMedium),
@@ -123,13 +127,12 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           const SizedBox(width: 16),
           Expanded(
             child: DropdownButtonFormField<String>(
-              value: _selectedUnit,
+              initialValue: _selectedUnit,
               decoration: const InputDecoration(
                 labelText: 'Unit',
                 border: OutlineInputBorder(),
               ),
-              items: [widget.foodItem.servingUnit, 'g', 'cup', 'piece']
-                  .toSet()
+              items: {widget.foodItem.servingUnit, 'g', 'cup', 'piece'}
                   .map((u) => DropdownMenuItem(value: u, child: Text(u)))
                   .toList(),
               onChanged: (value) {
@@ -152,9 +155,18 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _MacroItem(label: 'Protein', value: _calculate(widget.foodItem.protein), color: Colors.blue),
-          _MacroItem(label: 'Carbs', value: _calculate(widget.foodItem.carbs), color: Colors.green),
-          _MacroItem(label: 'Fat', value: _calculate(widget.foodItem.fat), color: Colors.orange),
+          _MacroItem(
+              label: 'Protein',
+              value: _calculate(widget.foodItem.protein),
+              color: Colors.blue),
+          _MacroItem(
+              label: 'Carbs',
+              value: _calculate(widget.foodItem.carbs),
+              color: Colors.green),
+          _MacroItem(
+              label: 'Fat',
+              value: _calculate(widget.foodItem.fat),
+              color: Colors.orange),
         ],
       ),
     );
@@ -174,7 +186,9 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Micronutrients', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Micronutrients',
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           ...micros.entries.map((e) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -182,7 +196,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(e.key),
-                    Text(e.value, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(e.value,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               )),
@@ -199,7 +214,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         children: [
           const Padding(
             padding: EdgeInsets.all(16.0),
-            child: Text('Select Meal', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text('Select Meal',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           ...['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map((meal) => ListTile(
                 title: Text(meal),
@@ -222,7 +238,8 @@ class _MacroItem extends StatelessWidget {
   final double value;
   final Color color;
 
-  const _MacroItem({required this.label, required this.value, required this.color});
+  const _MacroItem(
+      {required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -230,13 +247,14 @@ class _MacroItem extends StatelessWidget {
       children: [
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 4),
-        Text('${value.toStringAsFixed(1)}g', style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+        Text('${value.toStringAsFixed(1)}g',
+            style: TextStyle(fontWeight: FontWeight.bold, color: color)),
         const SizedBox(height: 8),
         SizedBox(
           width: 80,
           child: LinearProgressIndicator(
             value: 0.5, // Simplified
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color.withValues(alpha: 0.2),
             color: color,
           ),
         ),

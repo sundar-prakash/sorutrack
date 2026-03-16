@@ -14,7 +14,8 @@ class BadgeUnlockOverlay extends StatefulWidget {
     required this.onDismiss,
   });
 
-  static void show(BuildContext context, {required String title, required String iconDetails}) {
+  static void show(BuildContext context,
+      {required String title, required String iconDetails}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -41,13 +42,14 @@ class _BadgeUnlockOverlayState extends State<BadgeUnlockOverlay>
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
-    
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
+
     _scaleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    
+
     _scaleAnimation = Tween<double>(begin: 0.1, end: 1.0).animate(
       CurvedAnimation(
         parent: _scaleController,
@@ -70,7 +72,7 @@ class _BadgeUnlockOverlayState extends State<BadgeUnlockOverlay>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -96,7 +98,7 @@ class _BadgeUnlockOverlayState extends State<BadgeUnlockOverlay>
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   blurRadius: 32,
                   spreadRadius: 8,
                 ),

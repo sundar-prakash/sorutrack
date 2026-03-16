@@ -2,14 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/onboarding_screen.dart';
 import '../../features/auth/presentation/pages/profile_screen.dart';
+import '../../features/auth/presentation/pages/edit_profile_screen.dart';
 import '../../features/dashboard/presentation/pages/dashboard_screen.dart';
 import '../../features/food/presentation/pages/food_search_screen.dart';
 import '../../features/food/presentation/pages/barcode_scanner_screen.dart';
 import '../../features/food/presentation/pages/custom_food_screen.dart';
 import '../../features/food/presentation/pages/recipe_builder_screen.dart';
+import '../../features/meal_log/presentation/screens/meal_log_list_screen.dart';
+import '../../features/meal_log/presentation/screens/quick_add_screen.dart';
+import '../../features/reports/presentation/screens/reports_main_screen.dart';
+import '../../features/goals/presentation/pages/goals_screen.dart';
+import '../../features/goals/presentation/pages/goal_settings_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
-import '../../shared/widgets/placeholder_screen.dart';
+import '../../features/data_management/presentation/pages/data_management_screen.dart';
 import '../../shared/widgets/responsive_scaffold.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/di/injection.dart';
+import '../../features/meal_log/presentation/bloc/meal_log_bloc.dart';
+import '../../features/reports/presentation/bloc/reports_cubit.dart';
+import '../../features/reports/presentation/bloc/report_filter_cubit.dart';
+import '../../features/data_management/presentation/bloc/data_management_bloc.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -42,7 +54,10 @@ class AppRouter {
             pageBuilder: (context, state) => _buildPageWithTransition(
               context: context,
               state: state,
-              child: const PlaceholderScreen(title: 'Meal Log'),
+              child: BlocProvider(
+                create: (_) => getIt<MealLogBloc>(),
+                child: const MealLogListScreen(),
+              ),
             ),
           ),
           GoRoute(
@@ -50,7 +65,13 @@ class AppRouter {
             pageBuilder: (context, state) => _buildPageWithTransition(
               context: context,
               state: state,
-              child: const PlaceholderScreen(title: 'Reports'),
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => getIt<ReportsCubit>()),
+                  BlocProvider(create: (_) => ReportFilterCubit()),
+                ],
+                child: const ReportsMainScreen(),
+              ),
             ),
           ),
           GoRoute(
@@ -58,7 +79,7 @@ class AppRouter {
             pageBuilder: (context, state) => _buildPageWithTransition(
               context: context,
               state: state,
-              child: const PlaceholderScreen(title: 'Goals'),
+              child: const GoalsScreen(),
             ),
           ),
           GoRoute(
@@ -75,6 +96,32 @@ class AppRouter {
         path: '/profile',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/goal-settings',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const GoalSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/quick-add',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<MealLogBloc>(),
+          child: const QuickAddScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/data-management',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<DataManagementBloc>(),
+          child: const DataManagementScreen(),
+        ),
       ),
       GoRoute(
         path: '/food-search',

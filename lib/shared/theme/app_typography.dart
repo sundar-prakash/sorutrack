@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
 class AppTypography {
   // Display
@@ -40,29 +41,36 @@ class AppTypography {
       
   /// Generates the complete TextTheme for Material 3
   static TextTheme getTextTheme({required Brightness brightness}) {
-    final Color textColor =
-        brightness == Brightness.light ? Colors.black87 : Colors.white;
+    final Color highEmphasis = brightness == Brightness.light
+        ? AppColors.textHighEmphasisLight
+        : AppColors.textHighEmphasisDark;
+    final Color mediumEmphasis = brightness == Brightness.light
+        ? AppColors.textMediumEmphasisLight
+        : AppColors.textMediumEmphasisDark;
+    final Color disabled = brightness == Brightness.light
+        ? AppColors.textDisabledLight
+        : AppColors.textDisabledDark;
 
     return TextTheme(
-      displayLarge: display.copyWith(color: textColor),
-      displayMedium: display.copyWith(fontSize: 28, color: textColor),
-      displaySmall: display.copyWith(fontSize: 24, color: textColor),
+      displayLarge: display.copyWith(color: highEmphasis),
+      displayMedium: display.copyWith(fontSize: 28, color: highEmphasis),
+      displaySmall: display.copyWith(fontSize: 24, color: highEmphasis),
       
-      headlineLarge: headline.copyWith(color: textColor),
-      headlineMedium: headline.copyWith(fontSize: 20, color: textColor),
-      headlineSmall: headline.copyWith(fontSize: 18, color: textColor),
+      headlineLarge: headline.copyWith(color: highEmphasis),
+      headlineMedium: headline.copyWith(fontSize: 20, color: highEmphasis),
+      headlineSmall: headline.copyWith(fontSize: 18, color: highEmphasis),
       
-      titleLarge: title.copyWith(color: textColor),
-      titleMedium: title.copyWith(fontSize: 16, color: textColor),
-      titleSmall: title.copyWith(fontSize: 14, color: textColor),
+      titleLarge: title.copyWith(color: highEmphasis),
+      titleMedium: title.copyWith(fontSize: 16, color: highEmphasis),
+      titleSmall: title.copyWith(fontSize: 14, color: highEmphasis),
       
-      bodyLarge: body.copyWith(fontSize: 16, color: textColor),
-      bodyMedium: body.copyWith(color: textColor),
-      bodySmall: body.copyWith(fontSize: 12, color: textColor),
+      bodyLarge: body.copyWith(fontSize: 16, color: highEmphasis),
+      bodyMedium: body.copyWith(color: highEmphasis),
+      bodySmall: body.copyWith(fontSize: 12, color: mediumEmphasis),
       
-      labelLarge: body.copyWith(fontSize: 14, fontWeight: FontWeight.w500, color: textColor),
-      labelMedium: caption.copyWith(color: textColor),
-      labelSmall: caption.copyWith(fontSize: 10, color: textColor),
+      labelLarge: body.copyWith(fontSize: 14, fontWeight: FontWeight.w500, color: highEmphasis),
+      labelMedium: caption.copyWith(color: mediumEmphasis),
+      labelSmall: caption.copyWith(fontSize: 10, color: disabled),
     );
   }
 }

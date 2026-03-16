@@ -1,6 +1,5 @@
 import 'dart:math';
-import '../../features/auth/domain/models/auth_enums.dart';
-import '../../features/auth/domain/models/user_profile.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/auth_enums.dart';
 
 class NutritionEngine {
   /// Calculates Basal Metabolic Rate (BMR) using Mifflin-St Jeor formula (Default)

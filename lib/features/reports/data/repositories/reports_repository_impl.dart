@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/database/database_helper.dart';
-import '../../domain/models/report_models.dart';
-import '../repositories/reports_repository.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
+import 'package:sorutrack_pro/features/reports/domain/repositories/reports_repository.dart';
 
 @LazySingleton(as: ReportsRepository)
 class ReportsRepositoryImpl implements ReportsRepository {
@@ -101,5 +101,10 @@ class ReportsRepositoryImpl implements ReportsRepository {
       maxCalories: maxCalories,
     );
     return result.map((json) => FoodLogEntry.fromJson(json)).toList();
+  }
+
+  @override
+  Future<int> getCurrentStreak(String userId) async {
+    return await _dbHelper.getCurrentStreak(userId);
   }
 }

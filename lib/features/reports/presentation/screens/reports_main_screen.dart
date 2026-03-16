@@ -5,11 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
-import '../../../core/services/export_service.dart';
-import '../bloc/report_filter_cubit.dart';
-import '../bloc/reports_cubit.dart';
-import '../widgets/report_charts.dart';
-import '../models/report_models.dart';
+import 'package:sorutrack_pro/core/services/export_service.dart';
+import 'package:sorutrack_pro/features/reports/presentation/bloc/report_filter_cubit.dart';
+import 'package:sorutrack_pro/features/reports/presentation/bloc/reports_cubit.dart';
+import 'package:sorutrack_pro/features/reports/presentation/widgets/report_charts.dart';
+import 'package:sorutrack_pro/features/auth/presentation/cubit/profile_cubit.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
 
 class ReportsMainScreen extends StatefulWidget {
   const ReportsMainScreen({super.key});
@@ -61,7 +62,7 @@ class _ReportsMainScreenState extends State<ReportsMainScreen> with SingleTicker
         child: BlocBuilder<ReportFilterCubit, ReportFilterState>(
           builder: (context, filterState) {
             // Trigger data load when filter changes
-            context.read<ReportsCubit>().loadReports(filterState, 'current_user_id'); // TODO: Get actual user ID
+            context.read<ReportsCubit>().loadReports(filterState, 'default_user');
 
             return TabBarView(
               controller: _tabController,
@@ -134,9 +135,11 @@ class _ReportsMainScreenState extends State<ReportsMainScreen> with SingleTicker
                          final directory = await getTemporaryDirectory();
                          final file = File('${directory.path}/report_screenshot.png');
                          await file.writeAsBytes(image);
-                         await Share.shareXFiles([XFile(file.path)], text: 'My Nutrition Report');
+                         await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'My Nutrition Report'));
                        }
-                       Navigator.pop(context);
+                       if (context.mounted) {
+                         Navigator.pop(context);
+                       }
                     },
                   ),
                 ],
@@ -194,19 +197,22 @@ class _ReportsMainScreenState extends State<ReportsMainScreen> with SingleTicker
                     title: const Text('Custom Range'),
                     trailing: state.rangeType == DateRangeType.custom ? const Icon(Icons.check) : null,
                     onTap: () async {
+                      final navigator = Navigator.of(context);
+                      final scaffold = context;
                       final picked = await showDateRangePicker(
                         context: context,
                         firstDate: DateTime(2020),
                         lastDate: DateTime.now(),
                       );
+                      if (!scaffold.mounted) return;
                       if (picked != null) {
-                        context.read<ReportFilterCubit>().setRange(
+                        scaffold.read<ReportFilterCubit>().setRange(
                           DateRangeType.custom,
                           customStart: picked.start,
                           customEnd: picked.end,
                         );
                       }
-                      Navigator.pop(context);
+                      navigator.pop();
                     },
                   ),
                 ],
@@ -243,13 +249,21 @@ class _OverviewTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSummaryCards(avgCalories, maxCalories, daysOnTrack, state.goalAdherence.length),
+              _buildSummaryCards(avgCalories, maxCalories, daysOnTrack, state.goalAdherence.length, state.currentStreak),
               const SizedBox(height: 24),
               const Text('Calorie Trend', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 200,
-                child: CalorieTrendChart(data: state.calorieTrend, goalLine: 2000), // TODO: Get actual limit
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, profileState) {
+                  final target = profileState.maybeMap(
+                    loaded: (s) => s.calorieTarget,
+                    orElse: () => 2000.0,
+                  );
+                  return SizedBox(
+                    height: 200,
+                    child: CalorieTrendChart(data: state.calorieTrend, goalLine: target),
+                  );
+                },
               ),
               const SizedBox(height: 24),
               const Text('Macro Distribution', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -265,7 +279,7 @@ class _OverviewTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCards(double avg, double max, int onTrack, int total) {
+  Widget _buildSummaryCards(double avg, double max, int onTrack, int total, int streak) {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -277,7 +291,7 @@ class _OverviewTab extends StatelessWidget {
         _buildStatCard('Avg Calories', avg.toStringAsFixed(0), Icons.local_fire_department, Colors.orange),
         _buildStatCard('Best Day', max.toStringAsFixed(0), Icons.star, Colors.yellow[700]!),
         _buildStatCard('Goals Met', '$onTrack/$total', Icons.check_circle, Colors.green),
-        _buildStatCard('Streak', '5 days', Icons.bolt, Colors.blue), // TODO: Get actual streak
+        _buildStatCard('Streak', '$streak days', Icons.bolt, Colors.blue),
       ],
     );
   }
@@ -434,7 +448,11 @@ class _FoodDiaryTab extends StatelessWidget {
                         selected: isSelected,
                         onSelected: (selected) {
                           final newList = List<String>.from(state.mealTypes);
-                          if (selected) newList.add(type); else newList.remove(type);
+                          if (selected) {
+                            newList.add(type);
+                          } else {
+                            newList.remove(type);
+                          }
                           context.read<ReportFilterCubit>().updateFilters(mealTypes: newList);
                         },
                       );
@@ -511,7 +529,7 @@ class _GoalsTab extends StatelessWidget {
                   final day = adherence[index];
                   return Container(
                     decoration: BoxDecoration(
-                      color: day.isOnTrack ? Colors.green : Colors.red.withOpacity(0.3),
+                      color: day.isOnTrack ? Colors.green : Colors.red.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Center(

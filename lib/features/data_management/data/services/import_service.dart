@@ -1,8 +1,9 @@
 import 'dart:io';
-import 'package:csv/csv.dart';
+import 'package:csv/csv.dart' as csv;
 import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../core/database/database_helper.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sorutrack_pro/core/database/database_helper.dart';
 
 @lazySingleton
 class ImportService {
@@ -14,7 +15,7 @@ class ImportService {
   /// Parse HealthifyMe CSV
   Future<List<Map<String, dynamic>>> parseHealthifyMe(File file) async {
     final input = await file.readAsString();
-    List<List<dynamic>> rows = const CsvToListConverter().convert(input);
+    List<List<dynamic>> rows = const csv.CsvToListConverter().convert(input);
     
     if (rows.isEmpty) return [];
 
@@ -44,7 +45,7 @@ class ImportService {
   /// Parse MyFitnessPal CSV
   Future<List<Map<String, dynamic>>> parseMyFitnessPal(File file) async {
     final input = await file.readAsString();
-    List<List<dynamic>> rows = const CsvToListConverter().convert(input);
+    List<List<dynamic>> rows = const csv.CsvToListConverter().convert(input);
     
     if (rows.isEmpty) return [];
 
@@ -68,7 +69,7 @@ class ImportService {
   /// Generic CSV Parser with Column Mapping
   Future<List<Map<String, dynamic>>> parseGenericCsv(File file, Map<String, String> mapping) async {
     final input = await file.readAsString();
-    List<List<dynamic>> rows = const CsvToListConverter().convert(input);
+    List<List<dynamic>> rows = const csv.CsvToListConverter().convert(input);
     
     if (rows.isEmpty) return [];
     

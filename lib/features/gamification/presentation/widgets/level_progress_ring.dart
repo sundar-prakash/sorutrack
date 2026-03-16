@@ -33,7 +33,7 @@ class LevelProgressRing extends StatelessWidget {
             painter: _RingPainter(
               progress: progress,
               color: theme.colorScheme.primary,
-              backgroundColor: theme.colorScheme.surfaceVariant,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
             ),
           ),
           Column(

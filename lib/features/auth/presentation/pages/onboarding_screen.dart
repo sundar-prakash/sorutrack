@@ -28,7 +28,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 2));
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 2));
   }
 
   @override
@@ -41,11 +42,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _onNext() {
     final cubit = context.read<OnboardingCubit>();
     if (cubit.state.currentStep < 6) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-      cubit.nextStep();
+      if (cubit.nextStep()) {
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
     } else {
       _confettiController.play();
       Future.delayed(const Duration(seconds: 2), () {
@@ -93,7 +95,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     // Top Bar (Skip + Progress Dots)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Row(
                         children: [
                           if (state.currentStep > 0)
@@ -102,8 +105,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               onPressed: _onBack,
                             )
                           else
-                            const SizedBox(width: 48), // Placeholder for alignment
-                          
+                            const SizedBox(
+                                width: 48), // Placeholder for alignment
+
                           Expanded(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -112,10 +116,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 final isCompleted = index < state.currentStep;
                                 final color = isActive || isCompleted
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.surfaceVariant;
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest;
                                 return AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   height: 8,
                                   width: isActive ? 24 : 8,
                                   decoration: BoxDecoration(
@@ -133,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ],
                       ),
                     ),
-                    
+
                     Expanded(
                       child: PageView(
                         controller: _pageController,
@@ -141,10 +148,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           OnboardingStep1(
                             name: state.name,
-                            age: state.age,
+                            dateOfBirth: state.dateOfBirth,
                             gender: state.gender,
+                            error: state.currentStep == 0 ? state.error : null,
                             onNameChanged: cubit.updateName,
-                            onAgeChanged: cubit.updateAge,
+                            onDateOfBirthChanged: cubit.updateDateOfBirth,
                             onGenderChanged: cubit.updateGender,
                           ),
                           OnboardingStep2(
@@ -152,6 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             heightUnit: state.heightUnit,
                             weight: state.weight,
                             weightUnit: state.weightUnit,
+                            error: state.currentStep == 1 ? state.error : null,
                             onHeightChanged: cubit.updateHeight,
                             onWeightChanged: cubit.updateWeight,
                           ),
@@ -164,9 +173,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             onGoalChanged: cubit.updateGoal,
                           ),
                           OnboardingStep5(
+                            currentWeight: state.weight,
+                            goal: state.goal,
                             targetWeight: state.targetWeight,
                             weeklyGoal: state.weeklyGoal,
                             weightUnit: state.weightUnit,
+                            error: state.currentStep == 4 ? state.error : null,
                             onTargetWeightChanged: cubit.updateTargetWeight,
                             onWeeklyGoalChanged: cubit.updateWeeklyGoal,
                           ),
@@ -194,14 +206,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: ElevatedButton(
                               onPressed: state.isSubmitting ? null : _onNext,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: state.isSubmitting 
-                                ? const CircularProgressIndicator()
-                                : Text(state.currentStep == 6 ? 'FINISH' : 'NEXT'),
+                              child: state.isSubmitting
+                                  ? const CircularProgressIndicator()
+                                  : Text(state.currentStep == 6
+                                      ? 'FINISH'
+                                      : 'NEXT'),
                             ),
                           ),
                         ],

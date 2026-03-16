@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../domain/models/report_models.dart';
-import '../../domain/repositories/reports_repository.dart';
-import '../../data/services/gemini_reports_service.dart';
-import 'report_filter_cubit.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
+import 'package:sorutrack_pro/features/reports/domain/repositories/reports_repository.dart';
+import 'package:sorutrack_pro/features/reports/data/services/gemini_reports_service.dart';
+import 'package:sorutrack_pro/features/reports/presentation/bloc/report_filter_cubit.dart';
 
 abstract class ReportsState extends Equatable {
   const ReportsState();
@@ -25,6 +25,7 @@ class ReportsLoaded extends ReportsState {
   final List<GoalAdherenceData> goalAdherence;
   final MicronutrientData micronutrients;
   final List<FoodLogEntry> foodDiary;
+  final int currentStreak;
   final String? insights;
 
   const ReportsLoaded({
@@ -36,10 +37,11 @@ class ReportsLoaded extends ReportsState {
     required this.goalAdherence,
     required this.micronutrients,
     required this.foodDiary,
+    required this.currentStreak,
     this.insights,
   });
 
-  ReportsLoaded copyWith({String? insights}) {
+  ReportsLoaded copyWith({String? insights, int? currentStreak}) {
     return ReportsLoaded(
       calorieTrend: calorieTrend,
       macroTrend: macroTrend,
@@ -49,6 +51,7 @@ class ReportsLoaded extends ReportsState {
       goalAdherence: goalAdherence,
       micronutrients: micronutrients,
       foodDiary: foodDiary,
+      currentStreak: currentStreak ?? this.currentStreak,
       insights: insights ?? this.insights,
     );
   }
@@ -63,6 +66,7 @@ class ReportsLoaded extends ReportsState {
     goalAdherence, 
     micronutrients, 
     foodDiary,
+    currentStreak,
     insights
   ];
 }
@@ -100,6 +104,7 @@ class ReportsCubit extends Cubit<ReportsState> {
         minCalories: filter.minCalories,
         maxCalories: filter.maxCalories,
       );
+      final streak = await _repository.getCurrentStreak(userId);
 
       emit(ReportsLoaded(
         calorieTrend: calorieTrend,
@@ -110,6 +115,7 @@ class ReportsCubit extends Cubit<ReportsState> {
         goalAdherence: goalAdherence,
         micronutrients: micronutrients,
         foodDiary: foodDiary,
+        currentStreak: streak,
       ));
     } catch (e) {
       emit(ReportsError(e.toString()));

@@ -89,7 +89,9 @@ class MealRepositoryImpl implements MealRepository {
       });
 
       // Award XP
-      await _gamificationService.logMeal('default_user', false); // TODO: Replace with real user ID and check if first meal
+      final dateStr = DateTime.now().toIso8601String().split('T')[0];
+      final todayMeals = await _dbHelper.getMealsByDate('default_user', dateStr);
+      await _gamificationService.logMeal('default_user', todayMeals.isEmpty);
 
       return const Right(null);
     } catch (e) {

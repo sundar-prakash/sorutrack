@@ -1,4 +1,4 @@
-import '../models/report_models.dart';
+import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
 
 abstract class ReportsRepository {
   Future<List<ReportTrendData>> getCalorieTrend(String userId, DateTime startDate, DateTime endDate);
@@ -17,4 +17,5 @@ abstract class ReportsRepository {
     double? minCalories, 
     double? maxCalories}
   );
+  Future<int> getCurrentStreak(String userId);
 }

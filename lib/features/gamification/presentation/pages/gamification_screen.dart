@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/gamification_bloc.dart';
-import '../models/level_system.dart';
-import '../widgets/level_progress_ring.dart';
-import '../widgets/streak_flame.dart';
-import '../widgets/badge_item.dart';
+import 'package:sorutrack_pro/features/gamification/presentation/bloc/gamification_bloc.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/level_system.dart';
+import 'package:sorutrack_pro/features/gamification/domain/models/gamification_models.dart' as models;
+import 'package:sorutrack_pro/features/gamification/presentation/widgets/level_progress_ring.dart';
+import 'package:sorutrack_pro/features/gamification/presentation/widgets/streak_flame.dart';
+import 'package:sorutrack_pro/features/gamification/presentation/widgets/badge_item.dart';
 
 class GamificationScreen extends StatelessWidget {
   const GamificationScreen({super.key});
@@ -120,7 +121,7 @@ class GamificationScreen extends StatelessWidget {
                           ),
                         );
                         return _ChallengeCard(challenge: challenge, userChallenge: userChallenge);
-                      }).toList(),
+                      }),
                     ],
                   ),
                 ),

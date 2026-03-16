@@ -45,7 +45,7 @@ class _StreakBadgeState extends State<StreakBadge>
     }
 
     final theme = Theme.of(context);
-    final color = widget.streakDays >= 7 
+    final color = widget.streakDays >= 7
         ? const Color(0xFFE74C3C) // Intense Red/Orange
         : const Color(0xFFF39C12); // Orange
 
@@ -64,12 +64,12 @@ class _StreakBadgeState extends State<StreakBadge>
           height: widget.size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.15),
-            border: Border.all(color: color.withOpacity(0.5), width: 2),
+            color: color.withValues(alpha: 0.15),
+            border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
             boxShadow: [
               if (widget.streakDays >= 7)
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 12,
                   spreadRadius: 2,
                 ),
