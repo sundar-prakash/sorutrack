@@ -8,6 +8,7 @@ import 'package:sorutrack_pro/features/dashboard/presentation/widgets/insights_c
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/macro_bars_widget.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/meal_section_widget.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/quick_actions_row.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/widgets/streak_card_widget.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/water_tracker_widget.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/weekly_chart_widget.dart';
 
@@ -78,7 +79,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.calendar_month_outlined),
-              onPressed: () {},
+              onPressed: () async {
+                 final picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  if (!mounted) return;
+                  context.read<DashboardCubit>().loadDashboard(date: picked);
+                }
+              },
             ),
           ],
         ),
@@ -91,6 +103,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 streak: data.currentStreak,
                 selectedDate: selectedDate,
               ),
+              const SizedBox(height: 16),
+              const StreakCardWidget(),
               const SizedBox(height: 24),
               CalorieRingWidget(summary: data.nutritionSummary),
               const SizedBox(height: 32),

@@ -32,7 +32,7 @@ class ExportService {
     final file = File('${directory.path}/food_diary_export_${DateTime.now().millisecondsSinceEpoch}.csv');
     await file.writeAsString(csvData);
 
-    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'My Food Diary Export'));
+    await Share.shareXFiles([XFile(file.path)], text: 'My Food Diary Export');
   }
 
   static Future<void> exportToExcel(List<FoodLogEntry> entries) async {
@@ -67,7 +67,7 @@ class ExportService {
     
     if (fileBytes != null) {
       await File(fileName).writeAsBytes(fileBytes);
-      await SharePlus.instance.share(ShareParams(files: [XFile(fileName)], text: 'My Food Diary Excel Export'));
+      await Share.shareXFiles([XFile(fileName)], text: 'My Food Diary Excel Export');
     }
   }
 
@@ -121,6 +121,6 @@ class ExportService {
     final file = File('${directory.path}/nutrition_report_${DateTime.now().millisecondsSinceEpoch}.pdf');
     await file.writeAsBytes(await pdf.save());
 
-    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'My Nutrition Report PDF'));
+    await Share.shareXFiles([XFile(file.path)], text: 'My Nutrition Report PDF');
   }
 }

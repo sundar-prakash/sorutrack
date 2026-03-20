@@ -1,15 +1,17 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 @lazySingleton
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     if (kIsWeb) return;
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -24,12 +26,10 @@ class NotificationService {
     await _notifications.initialize(
       settings: initSettings,
       onDidReceiveNotificationResponse: (details) {
-        // Handle notification tap
         debugPrint('Notification tapped: ${details.payload}');
       },
     );
 
-    // Create Notification Channels for Android
     await _createChannels();
   }
 
@@ -38,39 +38,62 @@ class NotificationService {
       'meal_reminders',
       'Meal Reminders',
       description: 'Scheduled reminders for breakfast, lunch, and dinner.',
-      importance: Importance.defaultImportance,
-    );
-
-    const streakChannel = AndroidNotificationChannel(
-      'streak_alerts',
-      'Streak Alerts',
-      description: 'High priority alerts to protect your login streak.',
       importance: Importance.high,
     );
 
     const waterChannel = AndroidNotificationChannel(
       'water_reminders',
       'Water Reminders',
-      description: 'Periodic hydration reminders.',
-      importance: Importance.low,
+      description: 'Scheduled reminders for water intake.',
+      importance: Importance.high,
     );
 
     const achievementChannel = AndroidNotificationChannel(
       'achievements',
       'Achievements',
-      description: 'Notifications for badges and level ups.',
+      description: 'Progress and goal notifications.',
       importance: Importance.defaultImportance,
     );
 
-    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(mealChannel);
-      await androidPlugin.createNotificationChannel(streakChannel);
       await androidPlugin.createNotificationChannel(waterChannel);
       await androidPlugin.createNotificationChannel(achievementChannel);
     }
+  }
+
+  Future<void> requestPermissions() async {
+    if (kIsWeb) return;
+    
+    final androidPlugin = _notifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin != null) {
+      await androidPlugin.requestNotificationsPermission();
+    }
+
+    final iosPlugin = _notifications
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>();
+    if (iosPlugin != null) {
+      await iosPlugin.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+  }
+
+  Future<void> cancelAllNotifications() async {
+    await _notifications.cancelAll();
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await _notifications.cancel(id: id);
   }
 
   Future<void> showNotification({
@@ -80,6 +103,7 @@ class NotificationService {
     String? payload,
     String channelId = 'meal_reminders',
   }) async {
+    if (kIsWeb) return;
     await _notifications.show(
       id: id,
       title: title,
@@ -88,7 +112,8 @@ class NotificationService {
         android: AndroidNotificationDetails(
           channelId,
           channelId.replaceAll('_', ' ').toUpperCase(),
-          importance: Importance.max,
+          channelDescription: 'Notification channel for $channelId',
+          importance: Importance.high,
           priority: Priority.high,
         ),
         iOS: const DarwinNotificationDetails(),
@@ -102,53 +127,76 @@ class NotificationService {
     required String title,
     required String body,
     required DateTime scheduledDate,
-    String? payload,
     String channelId = 'meal_reminders',
     DateTimeComponents? matchDateTimeComponents,
   }) async {
-//    await _notifications.zonedSchedule(
-//      id,
-//      title,
-//      body,
-//      tz.TZDateTime.from(scheduledDate, tz.local),
-//      NotificationDetails(
-//        android: AndroidNotificationDetails(
-//          channelId,
-//          channelId.replaceAll('_', ' ').toUpperCase(),
-//        ),
-//        iOS: const DarwinNotificationDetails(),
-//      ),
-//      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-//      uiLocalNotificationDateInterpretation:
-//          UILocalNotificationDateInterpretation.absoluteTime,
-//      matchDateTimeComponents: matchDateTimeComponents,
-//      payload: payload,
-//    );
+    if (kIsWeb) return;
+
+    final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
+
+    await _notifications.zonedSchedule(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: tzDate,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelId.replaceAll('_', ' ').toUpperCase(),
+          channelDescription: 'Notification channel for $channelId',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: matchDateTimeComponents,
+    );
   }
 
-  Future<void> cancelNotification(int id) async {
-    // await _notifications.cancel(id);
+  /// Convenience method for 3x daily meal reminders
+  Future<void> scheduleMealReminders() async {
+    if (kIsWeb) return;
+    await _scheduleInternalDaily(101, 'Breakfast Time!', 'Time to log your morning meal.', 8, 0);
+    await _scheduleInternalDaily(102, 'Lunch Time!', 'Stay on track with your lunch.', 13, 0);
+    await _scheduleInternalDaily(103, 'Dinner Time!', 'Final meal of the day? Log it now.', 20, 0);
   }
 
-  Future<void> cancelAllNotifications() async {
-    await _notifications.cancelAll();
+  Future<void> cancelMealReminders() async {
+    await cancelNotification(101);
+    await cancelNotification(102);
+    await cancelNotification(103);
   }
 
-  Future<bool> requestPermissions() async {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final androidPlugin = _notifications.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-      return await androidPlugin?.requestNotificationsPermission() ?? false;
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final iosPlugin = _notifications.resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>();
-      return await iosPlugin?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          ) ??
-          false;
+  /// Convenience method for 3x daily water reminders
+  Future<void> scheduleWaterReminders() async {
+    if (kIsWeb) return;
+    await _scheduleInternalDaily(201, 'Hydration Check!', 'Start your day (8:30 AM) with a glass of water.', 8, 30, channel: 'water_reminders');
+    await _scheduleInternalDaily(202, 'Drink Water!', 'Don\'t forget to stay hydrated (1:30 PM).', 13, 30, channel: 'water_reminders');
+    await _scheduleInternalDaily(203, 'Water Reminder!', 'Evening hydration (6 PM) check.', 18, 0, channel: 'water_reminders');
+  }
+
+  Future<void> cancelWaterReminders() async {
+    await cancelNotification(201);
+    await cancelNotification(202);
+    await cancelNotification(203);
+  }
+
+  Future<void> _scheduleInternalDaily(int id, String title, String body, int hour, int minute, {String channel = 'meal_reminders'}) async {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
-    return false;
+
+    await scheduleNotification(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
+      channelId: channel,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
   }
 }

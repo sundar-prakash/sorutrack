@@ -11,8 +11,8 @@ class ReportTrendData extends Equatable {
 
   factory ReportTrendData.fromJson(Map<String, dynamic> json) {
     return ReportTrendData(
-      date: json['date'] as String,
-      value: (json['calories'] ?? json['weight'] ?? json['value'] as num).toDouble(),
+      date: (json['date'] ?? '').toString(),
+      value: (json['calories'] ?? json['weight'] ?? json['value'] ?? 0.0 as num).toDouble(),
     );
   }
 }
@@ -35,10 +35,10 @@ class MacroDistribution extends Equatable {
 
   factory MacroDistribution.fromJson(Map<String, dynamic> json) {
     return MacroDistribution(
-      date: json['date'] as String,
-      protein: (json['protein'] as num).toDouble(),
-      carbs: (json['carbs'] as num).toDouble(),
-      fat: (json['fat'] as num).toDouble(),
+      date: (json['date'] ?? '').toString(),
+      protein: (json['protein'] ?? 0.0 as num).toDouble(),
+      carbs: (json['carbs'] ?? 0.0 as num).toDouble(),
+      fat: (json['fat'] ?? 0.0 as num).toDouble(),
     );
   }
 }
@@ -59,9 +59,9 @@ class TopFood extends Equatable {
 
   factory TopFood.fromJson(Map<String, dynamic> json) {
     return TopFood(
-      name: json['name'] as String,
-      frequency: json['frequency'] as int,
-      totalCalories: (json['total_calories'] as num).toDouble(),
+      name: (json['name'] ?? 'Unknown').toString(),
+      frequency: (json['frequency'] ?? 0 as num).toInt(),
+      totalCalories: (json['total_calories'] ?? 0.0 as num).toDouble(),
     );
   }
 }
@@ -77,8 +77,8 @@ class MealTimingData extends Equatable {
 
   factory MealTimingData.fromJson(Map<String, dynamic> json) {
     return MealTimingData(
-      hour: int.parse(json['hour'] as String),
-      count: json['count'] as int,
+      hour: int.tryParse((json['hour'] ?? '0').toString()) ?? 0,
+      count: (json['count'] ?? 0 as num).toInt(),
     );
   }
 }
@@ -101,10 +101,10 @@ class GoalAdherenceData extends Equatable {
 
   factory GoalAdherenceData.fromJson(Map<String, dynamic> json) {
     return GoalAdherenceData(
-      date: json['date'] as String,
-      actual: (json['total_calories'] as num).toDouble(),
-      target: (json['goal_calories'] as num? ?? 0.0).toDouble(),
-      isOnTrack: (json['is_on_track'] as int) == 1,
+      date: (json['date'] ?? '').toString(),
+      actual: (json['total_calories'] ?? 0.0 as num).toDouble(),
+      target: (json['goal_calories'] ?? 0.0 as num).toDouble(),
+      isOnTrack: (json['is_on_track'] ?? 0 as num) == 1,
     );
   }
 }
@@ -158,14 +158,15 @@ class FoodLogEntry extends Equatable {
   List<Object?> get props => [dateTime, mealType, foodName, calories, protein, carbs, fat];
 
   factory FoodLogEntry.fromJson(Map<String, dynamic> json) {
+    String timeStr = (json['meal_time'] ?? '').toString();
     return FoodLogEntry(
-      dateTime: DateTime.parse(json['meal_time'] as String),
-      mealType: json['meal_type'] as String,
-      foodName: json['food_name'] as String,
-      calories: (json['calories'] as num).toDouble(),
-      protein: (json['protein'] as num).toDouble(),
-      carbs: (json['carbs'] as num).toDouble(),
-      fat: (json['fat'] as num).toDouble(),
+      dateTime: timeStr.isNotEmpty ? DateTime.parse(timeStr) : DateTime.now(),
+      mealType: (json['meal_type'] ?? 'Unknown').toString(),
+      foodName: (json['food_name'] ?? 'Unknown').toString(),
+      calories: (json['calories'] ?? 0.0 as num).toDouble(),
+      protein: (json['protein'] ?? 0.0 as num).toDouble(),
+      carbs: (json['carbs'] ?? 0.0 as num).toDouble(),
+      fat: (json['fat'] ?? 0.0 as num).toDouble(),
     );
   }
 }

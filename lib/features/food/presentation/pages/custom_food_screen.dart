@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/unit_helper.dart';
+import '../../../../features/auth/presentation/cubit/profile_cubit.dart';
+import '../../../../features/auth/domain/models/auth_enums.dart';
 import '../../domain/entities/food_item.dart';
 import '../../domain/repositories/food_repository.dart';
 
@@ -82,88 +85,114 @@ class _CustomFoodScreenState extends State<CustomFoodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Create Custom Food')),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Food Name*', border: OutlineInputBorder()),
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                onSaved: (v) => _name = v!,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Brand (Optional)', border: OutlineInputBorder()),
-                onSaved: (v) => _brand = v ?? '',
-              ),
-              const SizedBox(height: 16),
-              Row(
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, profileState) {
+          final useMetric = profileState.maybeWhen(
+            loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+            orElse: () => true,
+          );
+          final unitHelper = UnitHelper(useMetric: useMetric);
+
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(labelText: 'Serving Size*', border: OutlineInputBorder()),
-                      keyboardType: TextInputType.number,
-                      initialValue: '100',
-                      onSaved: (v) => _servingSize = double.tryParse(v ?? '100') ?? 100,
-                    ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                        labelText: 'Food Name*', border: OutlineInputBorder()),
+                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    onSaved: (v) => _name = v!,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _servingUnit,
-                      decoration: const InputDecoration(labelText: 'Unit', border: OutlineInputBorder()),
-                      items: ['g', 'ml', 'piece', 'serving', 'cup']
-                          .map((u) => DropdownMenuItem(value: u, child: Text(u)))
-                          .toList(),
-                      onChanged: (v) => setState(() => _servingUnit = v!),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                        labelText: 'Brand (Optional)', border: OutlineInputBorder()),
+                    onSaved: (v) => _brand = v ?? '',
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: 'Serving Size*', border: OutlineInputBorder()),
+                          keyboardType: TextInputType.number,
+                          initialValue: '100',
+                          onSaved: (v) =>
+                              _servingSize = double.tryParse(v ?? '100') ?? 100,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _servingUnit,
+                          decoration: const InputDecoration(
+                              labelText: 'Unit', border: OutlineInputBorder()),
+                          items: ['g', 'ml', 'piece', 'serving', 'cup']
+                              .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                              .toList(),
+                          onChanged: (v) => setState(() => _servingUnit = v!),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('Nutritional Info (per serving)',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Calories (${unitHelper.energyUnit})*',
+                        border: const OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    onSaved: (v) => _calories = double.tryParse(v ?? '0') ?? 0,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: _buildMacroField('Protein (${unitHelper.weightUnit})*',
+                              (v) => _protein = double.tryParse(v!) ?? 0)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                          child: _buildMacroField('Carbs (${unitHelper.weightUnit})*',
+                              (v) => _carbs = double.tryParse(v!) ?? 0)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                          child: _buildMacroField('Fat (${unitHelper.weightUnit})*',
+                              (v) => _fat = double.tryParse(v!) ?? 0)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  DropdownButtonFormField<String>(
+                    initialValue: _category,
+                    decoration: const InputDecoration(
+                        labelText: 'Tag As', border: OutlineInputBorder()),
+                    items: ['Home Recipe', 'Restaurant', 'Packaged']
+                        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                        .toList(),
+                    onChanged: (v) => setState(() => _category = v!),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
                     ),
+                    child: const Text('Save Food',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              const Text('Nutritional Info (per serving)', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Calories (kcal)*', border: OutlineInputBorder()),
-                keyboardType: TextInputType.number,
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                onSaved: (v) => _calories = double.tryParse(v ?? '0') ?? 0,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _buildMacroField('Protein (g)*', (v) => _protein = double.tryParse(v!) ?? 0)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildMacroField('Carbs (g)*', (v) => _carbs = double.tryParse(v!) ?? 0)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildMacroField('Fat (g)*', (v) => _fat = double.tryParse(v!) ?? 0)),
-                ],
-              ),
-              const SizedBox(height: 24),
-              DropdownButtonFormField<String>(
-                initialValue: _category,
-                decoration: const InputDecoration(labelText: 'Tag As', border: OutlineInputBorder()),
-                items: ['Home Recipe', 'Restaurant', 'Packaged']
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                    .toList(),
-                onChanged: (v) => setState(() => _category = v!),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(56),
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Save Food', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

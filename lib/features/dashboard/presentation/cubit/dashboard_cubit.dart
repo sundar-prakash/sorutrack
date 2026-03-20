@@ -14,17 +14,25 @@ class DashboardCubit extends Cubit<DashboardState> {
   Future<void> loadDashboard({DateTime? date, bool isRefresh = false}) async {
     final targetDate = date ?? DateTime.now();
     
-    if (isRefresh) {
-      state.maybeWhen(
-        loaded: (data, d, _) => emit(DashboardState.loaded(
-          data: data,
-          selectedDate: d,
-          isRefreshing: true,
-        )),
-        orElse: () => emit(const DashboardState.loading()),
-      );
-    } else {
-      emit(const DashboardState.loading());
+    // Only show loading if we don't have data already or it's an explicit refresh
+    final bool hasData = state.maybeWhen(
+      loaded: (data, date, _) => true,
+      orElse: () => false,
+    );
+
+    if (!hasData || isRefresh) {
+      if (isRefresh) {
+        state.maybeWhen(
+          loaded: (data, d, _) => emit(DashboardState.loaded(
+            data: data,
+            selectedDate: d,
+            isRefreshing: true,
+          )),
+          orElse: () => emit(const DashboardState.loading()),
+        );
+      } else {
+        emit(const DashboardState.loading());
+      }
     }
 
     final result = await _repository.getDashboardData('default_user', targetDate);
@@ -53,7 +61,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       loaded: (data, date, _) async {
         try {
           await _repository.logWater('default_user', date, mlToAdd);
-          loadDashboard(date: date); // Reload to reflect changes
+          loadDashboard(date: date, isRefresh: true); // Silent reload to avoid full-screen spinner
         } catch (e) {
           emit(DashboardState.error(e.toString()));
         }

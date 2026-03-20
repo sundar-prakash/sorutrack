@@ -69,28 +69,28 @@ class ExportService {
     List<List<dynamic>> rows = [];
     // Header
     rows.add([
-      TextCellValue('Date'), 
-      TextCellValue('Meal Type'), 
-      TextCellValue('Food Name'), 
-      TextCellValue('Quantity'), 
-      TextCellValue('Unit'), 
-      TextCellValue('Calories'), 
-      TextCellValue('Protein'), 
-      TextCellValue('Carbs'), 
-      TextCellValue('Fat')
+      'Date', 
+      'Meal Type', 
+      'Food Name', 
+      'Quantity', 
+      'Unit', 
+      'Calories', 
+      'Protein', 
+      'Carbs', 
+      'Fat'
     ]);
     
     for (var meal in meals) {
       rows.add([
-        TextCellValue(meal['meal_time'].toString()),
-        TextCellValue(meal['meal_type'].toString()),
-        TextCellValue(meal['food_name'].toString()),
-        DoubleCellValue(double.tryParse(meal['quantity'].toString()) ?? 0.0),
-        TextCellValue(meal['unit'].toString()),
-        DoubleCellValue(double.tryParse(meal['calories'].toString()) ?? 0.0),
-        DoubleCellValue(double.tryParse(meal['protein'].toString()) ?? 0.0),
-        DoubleCellValue(double.tryParse(meal['carbs'].toString()) ?? 0.0),
-        DoubleCellValue(double.tryParse(meal['fat'].toString()) ?? 0.0),
+        meal['meal_time']?.toString() ?? '',
+        meal['meal_type']?.toString() ?? '',
+        meal['food_name']?.toString() ?? '',
+        double.tryParse(meal['quantity'].toString()) ?? 0.0,
+        meal['unit']?.toString() ?? '',
+        double.tryParse(meal['calories'].toString()) ?? 0.0,
+        double.tryParse(meal['protein'].toString()) ?? 0.0,
+        double.tryParse(meal['carbs'].toString()) ?? 0.0,
+        double.tryParse(meal['fat'].toString()) ?? 0.0,
       ]);
     }
 
@@ -252,6 +252,6 @@ class ExportService {
   }
 
   Future<void> shareFile(String filePath) async {
-    await SharePlus.instance.share(ShareParams(files: [XFile(filePath)], text: 'Exported from SoruTrack Pro'));
+    await Share.shareXFiles([XFile(filePath)], text: 'Exported from SoruTrack Pro');
   }
 }

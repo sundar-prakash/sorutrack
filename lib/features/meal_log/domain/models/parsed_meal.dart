@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class ParsedMeal extends Equatable {
+  final String? mealId;
   final String mealName;
   final String mealTime;
   final String mealType;
@@ -15,6 +16,7 @@ class ParsedMeal extends Equatable {
   final List<String> alternativesSuggested;
 
   const ParsedMeal({
+    this.mealId,
     required this.mealName,
     required this.mealTime,
     required this.mealType,
@@ -31,6 +33,7 @@ class ParsedMeal extends Equatable {
 
   @override
   List<Object?> get props => [
+        mealId,
         mealName,
         mealTime,
         mealType,
@@ -47,6 +50,7 @@ class ParsedMeal extends Equatable {
 
   factory ParsedMeal.fromJson(Map<String, dynamic> json) {
     return ParsedMeal(
+      mealId: json['mealId'] ?? json['meal_id'],
       mealName: json['mealName'] ?? json['meal_name'] ?? '',
       mealTime: json['mealTime'] ?? json['meal_time'] ?? '',
       mealType: json['mealType'] ?? json['meal_type'] ?? '',
@@ -63,6 +67,7 @@ class ParsedMeal extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
+        'meal_id': mealId,
         'meal_name': mealName,
         'meal_time': mealTime,
         'meal_type': mealType,

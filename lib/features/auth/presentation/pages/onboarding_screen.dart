@@ -12,6 +12,7 @@ import '../widgets/onboarding_step4.dart';
 import '../widgets/onboarding_step5.dart';
 import '../widgets/onboarding_step6.dart';
 import '../widgets/onboarding_step7.dart';
+import '../../../../core/services/gemini_key_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -39,40 +40,141 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  // ─── Navigation ───────────────────────────────────────────
   void _onNext() {
     final cubit = context.read<OnboardingCubit>();
+
     if (cubit.state.currentStep < 6) {
       if (cubit.nextStep()) {
-        _pageController.nextPage(
+        _pageController.animateToPage(
+          cubit.state.currentStep,
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
         );
       }
     } else {
-      _confettiController.play();
-      Future.delayed(const Duration(seconds: 2), () {
-        cubit.submit().then((_) {
-          if (mounted) context.go('/dashboard');
-        });
-      });
+      // Last step — handle Gemini key validation before finishing
+      _handleFinish();
     }
   }
 
-  void _onSkip() {
-    context.go('/dashboard');
+  Future<void> _handleFinish() async {
+    final cubit = context.read<OnboardingCubit>();
+    final key = cubit.state.geminiApiKey.trim();
+
+    if (key.isEmpty) {
+      // No key — warn user
+      final proceed = await _showNoKeyDialog();
+      if (!proceed) return;
+      _doSubmit();
+      return;
+    }
+
+    // Key is present — test it live
+    setState(() {}); // trigger isSubmitting UI via cubit
+    final result = await cubit.validateAndTestGeminiKey();
+
+    if (!mounted) return;
+
+    if (result == ApiKeyValidationResult.valid ||
+        result == ApiKeyValidationResult.rateLimited) {
+      // Valid (or rate limited — key exists) → proceed
+      _doSubmit();
+    } else {
+      // Invalid/network error — warn user
+      final proceed = await _showInvalidKeyDialog(result);
+      if (!proceed) return;
+      _doSubmit();
+    }
   }
+
+  void _doSubmit() {
+    final cubit = context.read<OnboardingCubit>();
+    _confettiController.play();
+    Future.delayed(const Duration(seconds: 2), () {
+      cubit.submit().then((_) {
+        if (mounted) context.go('/dashboard');
+      });
+    });
+  }
+
+  Future<bool> _showNoKeyDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            icon: const Icon(Icons.warning_amber_rounded,
+                color: Colors.orange, size: 40),
+            title: const Text('No Gemini API Key'),
+            content: const Text(
+              'Without a Gemini API key, AI meal parsing won\'t work.\n\n'
+              'You can add one later in Settings → AI Settings.\n\n'
+              'Continue without AI features?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('GO BACK'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white),
+                child: const Text('CONTINUE ANYWAY'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<bool> _showInvalidKeyDialog(ApiKeyValidationResult result) async {
+    final message = result == ApiKeyValidationResult.networkError
+        ? 'Could not connect to verify your key. Check your internet connection.'
+        : 'The key you entered appears to be invalid. AI meal parsing won\'t work.';
+
+    return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            icon:
+                const Icon(Icons.error_outline, color: Colors.red, size: 40),
+            title: const Text('Invalid Gemini Key'),
+            content: Text(
+              '$message\n\nYou can fix this later in Settings → AI Settings.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('FIX KEY'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white),
+                child: const Text('CONTINUE ANYWAY'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  void _onSkip() => context.go('/dashboard');
 
   void _onBack() {
     final cubit = context.read<OnboardingCubit>();
     if (cubit.state.currentStep > 0) {
-      _pageController.previousPage(
+      cubit.previousStep();
+      _pageController.animateToPage(
+        cubit.state.currentStep,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
-      cubit.previousStep();
     }
   }
 
+  // ─── Build ────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +195,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               SafeArea(
                 child: Column(
                   children: [
-                    // Top Bar (Skip + Progress Dots)
+                    // Top Bar
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
@@ -105,8 +207,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               onPressed: _onBack,
                             )
                           else
-                            const SizedBox(
-                                width: 48), // Placeholder for alignment
+                            const SizedBox(width: 48),
 
                           Expanded(
                             child: Row(
@@ -121,8 +222,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         .surfaceContainerHighest;
                                 return AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 4),
                                   height: 8,
                                   width: isActive ? 24 : 8,
                                   decoration: BoxDecoration(
@@ -150,7 +251,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             name: state.name,
                             dateOfBirth: state.dateOfBirth,
                             gender: state.gender,
-                            error: state.currentStep == 0 ? state.error : null,
+                            error:
+                                state.currentStep == 0 ? state.error : null,
                             onNameChanged: cubit.updateName,
                             onDateOfBirthChanged: cubit.updateDateOfBirth,
                             onGenderChanged: cubit.updateGender,
@@ -160,7 +262,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             heightUnit: state.heightUnit,
                             weight: state.weight,
                             weightUnit: state.weightUnit,
-                            error: state.currentStep == 1 ? state.error : null,
+                            error:
+                                state.currentStep == 1 ? state.error : null,
                             onHeightChanged: cubit.updateHeight,
                             onWeightChanged: cubit.updateWeight,
                           ),
@@ -178,7 +281,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             targetWeight: state.targetWeight,
                             weeklyGoal: state.weeklyGoal,
                             weightUnit: state.weightUnit,
-                            error: state.currentStep == 4 ? state.error : null,
+                            error:
+                                state.currentStep == 4 ? state.error : null,
                             onTargetWeightChanged: cubit.updateTargetWeight,
                             onWeeklyGoalChanged: cubit.updateWeeklyGoal,
                           ),
@@ -204,7 +308,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: state.isSubmitting ? null : _onNext,
+                              onPressed:
+                                  state.isSubmitting ? null : _onNext,
                               style: ElevatedButton.styleFrom(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 16),
@@ -213,7 +318,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                               ),
                               child: state.isSubmitting
-                                  ? const CircularProgressIndicator()
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2))
                                   : Text(state.currentStep == 6
                                       ? 'FINISH'
                                       : 'NEXT'),
@@ -225,12 +334,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ],
                 ),
               ),
-              // Confetti Overlay
+              // Confetti
               Align(
                 alignment: Alignment.topCenter,
                 child: ConfettiWidget(
                   confettiController: _confettiController,
-                  blastDirection: pi / 2, // down
+                  blastDirection: pi / 2,
                   maxBlastForce: 5,
                   minBlastForce: 2,
                   emissionFrequency: 0.05,

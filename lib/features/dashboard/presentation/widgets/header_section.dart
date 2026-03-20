@@ -82,7 +82,7 @@ class HeaderSection extends StatelessWidget {
                   context: context,
                   initialDate: selectedDate,
                   firstDate: DateTime(2020),
-                  lastDate: DateTime(2101),
+                  lastDate: DateTime.now(),
                 );
                 if (picked != null && context.mounted) {
                   context.read<DashboardCubit>().loadDashboard(date: picked);
@@ -99,8 +99,8 @@ class HeaderSection extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () => context.read<DashboardCubit>().nextDay(),
-              icon: const Icon(Icons.chevron_right),
+              onPressed: isToday ? null : () => context.read<DashboardCubit>().nextDay(),
+              icon: Icon(Icons.chevron_right, color: isToday ? Colors.grey : null),
             ),
           ],
         ),

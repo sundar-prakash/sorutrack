@@ -4,6 +4,8 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'core/di/injection.dart';
 import 'core/database/database_helper.dart';
 import 'core/services/background_task_service.dart';
+import 'core/routing/app_router.dart';
+import 'features/notifications/data/services/notification_service.dart';
 import 'app.dart';
 import 'package:logger/logger.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -27,6 +29,12 @@ void main() async {
   // Initialize Database
   final dbHelper = getIt<DatabaseHelper>();
   await dbHelper.database;
+
+  // Init notification service (creates Android channels)
+  await getIt<NotificationService>().init();
+
+  // Load SharedPreferences for router redirect guard
+  await initRouterPrefs();
 
   // Setup error logging
   final logger = getIt<Logger>();

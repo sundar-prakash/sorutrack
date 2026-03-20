@@ -77,30 +77,32 @@ class OnboardingStep5 extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(height: 32),
-              const Text('Weekly Goal (kg/week)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                children: [0.25, 0.5, 0.75, 1.0].map((val) {
-                  final isSelected = weeklyGoal == val;
-                  return ChoiceChip(
-                    label: Text('$val kg'),
-                    selected: isSelected,
-                    onSelected: (selected) => onWeeklyGoalChanged(val),
-                    selectedColor:
-                        Theme.of(context).primaryColor.withValues(alpha: 0.2),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _getPaceDescription(weeklyGoal),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
-              ),
+              if (goal != GoalType.maintain) ...[
+                const SizedBox(height: 32),
+                const Text('Weekly Goal (kg/week)',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 12,
+                  children: [0.25, 0.5, 0.75, 1.0].map((val) {
+                    final isSelected = weeklyGoal == val;
+                    return ChoiceChip(
+                      label: Text('$val kg'),
+                      selected: isSelected,
+                      onSelected: (selected) => onWeeklyGoalChanged(val),
+                      selectedColor:
+                          Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _getPaceDescription(weeklyGoal),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ],
             ],
           ),
         ),

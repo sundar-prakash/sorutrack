@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../features/auth/presentation/cubit/profile_cubit.dart';
+import '../../../../features/auth/domain/models/auth_enums.dart';
+import '../../../../core/utils/unit_helper.dart';
 import '../../domain/entities/food_item.dart';
 
 class FoodDetailScreen extends StatefulWidget {
@@ -45,16 +49,26 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(theme),
-            _buildServingAdjuster(theme),
-            _buildMacroBreakdown(theme),
-            _buildMicroBreakdown(theme),
-            const SizedBox(height: 100),
-          ],
-        ),
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, profileState) {
+          final useMetric = profileState.maybeWhen(
+            loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+            orElse: () => true,
+          );
+          final unitHelper = UnitHelper(useMetric: useMetric);
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildHeader(theme, unitHelper),
+                _buildServingAdjuster(theme),
+                _buildMacroBreakdown(theme, unitHelper),
+                _buildMicroBreakdown(theme, unitHelper),
+                const SizedBox(height: 100),
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -74,7 +88,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(ThemeData theme, UnitHelper unitHelper) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -92,7 +106,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             Text(widget.foodItem.brand!, style: theme.textTheme.titleMedium),
           const SizedBox(height: 16),
           Text(
-            '${_calculate(widget.foodItem.calories).toInt()} kcal',
+            '${_calculate(widget.foodItem.calories).toInt()} ${unitHelper.energyUnit}',
             style: theme.textTheme.displaySmall?.copyWith(
               color: theme.primaryColor,
               fontWeight: FontWeight.bold,
@@ -149,7 +163,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     );
   }
 
-  Widget _buildMacroBreakdown(ThemeData theme) {
+  Widget _buildMacroBreakdown(ThemeData theme, UnitHelper unitHelper) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
@@ -158,24 +172,27 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           _MacroItem(
               label: 'Protein',
               value: _calculate(widget.foodItem.protein),
+              unit: unitHelper.weightUnit,
               color: Colors.blue),
           _MacroItem(
               label: 'Carbs',
               value: _calculate(widget.foodItem.carbs),
+              unit: unitHelper.weightUnit,
               color: Colors.green),
           _MacroItem(
               label: 'Fat',
               value: _calculate(widget.foodItem.fat),
+              unit: unitHelper.weightUnit,
               color: Colors.orange),
         ],
       ),
     );
   }
 
-  Widget _buildMicroBreakdown(ThemeData theme) {
+  Widget _buildMicroBreakdown(ThemeData theme, UnitHelper unitHelper) {
     final micros = {
-      'Fiber': '${_calculate(widget.foodItem.fiber).toStringAsFixed(1)}g',
-      'Sugar': '${_calculate(widget.foodItem.sugar).toStringAsFixed(1)}g',
+      'Fiber': '${_calculate(widget.foodItem.fiber).toStringAsFixed(1)}${unitHelper.weightUnit}',
+      'Sugar': '${_calculate(widget.foodItem.sugar).toStringAsFixed(1)}${unitHelper.weightUnit}',
       'Sodium': '${_calculate(widget.foodItem.sodium).toStringAsFixed(0)}mg',
       'Iron': '${_calculate(widget.foodItem.iron).toStringAsFixed(1)}mg',
       'Calcium': '${_calculate(widget.foodItem.calcium).toStringAsFixed(0)}mg',
@@ -236,10 +253,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 class _MacroItem extends StatelessWidget {
   final String label;
   final double value;
+  final String unit;
   final Color color;
 
   const _MacroItem(
-      {required this.label, required this.value, required this.color});
+      {required this.label, required this.value, required this.unit, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +265,7 @@ class _MacroItem extends StatelessWidget {
       children: [
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 4),
-        Text('${value.toStringAsFixed(1)}g',
+        Text('${value.toStringAsFixed(1)}$unit',
             style: TextStyle(fontWeight: FontWeight.bold, color: color)),
         const SizedBox(height: 8),
         SizedBox(

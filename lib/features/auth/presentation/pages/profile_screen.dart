@@ -5,6 +5,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sorutrack_pro/features/auth/presentation/cubit/profile_cubit.dart';
 import 'package:sorutrack_pro/features/auth/domain/models/user_profile.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/auth_enums.dart';
+import 'package:sorutrack_pro/core/utils/unit_helper.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -30,13 +32,16 @@ class ProfileScreen extends StatelessWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (message) => Center(child: Text(message)),
             loaded: (profile, bmr, tdee, calorieTarget, macros, bmi, bmiStatus) {
+              final useMetric = profile.weightUnit == WeightUnit.kg;
+              final unitHelper = UnitHelper(useMetric: useMetric);
+
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header Card
-                    _ProfileHeader(profile: profile, bmi: bmi, bmiStatus: bmiStatus),
+                    _ProfileHeader(profile: profile, bmi: bmi, bmiStatus: bmiStatus, weightUnit: unitHelper.weightUnitLabel),
                     const SizedBox(height: 24),
 
                     // Calorie & TDEE Cards
@@ -46,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
                           child: _StatCard(
                             title: 'Daily Target',
                             value: '${calorieTarget.round()}',
-                            unit: 'kcal',
+                            unit: unitHelper.energyUnit,
                             icon: Icons.track_changes,
                             color: Colors.orange,
                             delay: 100,
@@ -57,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
                           child: _StatCard(
                             title: 'TDEE',
                             value: '${tdee.round()}',
-                            unit: 'kcal',
+                            unit: unitHelper.energyUnit,
                             icon: Icons.flash_on,
                             color: Colors.blue,
                             delay: 200,
@@ -72,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
                           child: _StatCard(
                             title: 'BMR',
                             value: '${bmr.round()}',
-                            unit: 'kcal',
+                            unit: unitHelper.energyUnit,
                             icon: Icons.favorite,
                             color: Colors.red,
                             delay: 300,
@@ -90,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-                    _MacroRow(macros: macros),
+                    _MacroRow(macros: macros, weightUnit: unitHelper.weightUnit),
                     const SizedBox(height: 32),
 
                     // Weight History Chart
@@ -116,8 +121,9 @@ class _ProfileHeader extends StatelessWidget {
   final UserProfile profile;
   final double bmi;
   final String bmiStatus;
+  final String weightUnit;
 
-  const _ProfileHeader({required this.profile, required this.bmi, required this.bmiStatus});
+  const _ProfileHeader({required this.profile, required this.bmi, required this.bmiStatus, required this.weightUnit});
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +154,7 @@ class _ProfileHeader extends StatelessWidget {
                     style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '${profile.age} years • ${profile.gender.name.toUpperCase()}',
+                    '${profile.age} years • ${profile.gender.name.toUpperCase()} • ${profile.weight.toStringAsFixed(1)} $weightUnit',
                     style: const TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 8),
@@ -226,17 +232,18 @@ class _StatCard extends StatelessWidget {
 
 class _MacroRow extends StatelessWidget {
   final Map<String, double> macros;
+  final String weightUnit;
 
-  const _MacroRow({required this.macros});
+  const _MacroRow({required this.macros, required this.weightUnit});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _MacroItem(label: 'Protein', value: macros['protein'] ?? 0, color: Colors.blue),
-        _MacroItem(label: 'Carbs', value: macros['carbs'] ?? 0, color: Colors.green),
-        _MacroItem(label: 'Fat', value: macros['fat'] ?? 0, color: Colors.red),
+        _MacroItem(label: 'Protein', value: macros['protein'] ?? 0, weightUnit: weightUnit, color: Colors.blue),
+        _MacroItem(label: 'Carbs', value: macros['carbs'] ?? 0, weightUnit: weightUnit, color: Colors.green),
+        _MacroItem(label: 'Fat', value: macros['fat'] ?? 0, weightUnit: weightUnit, color: Colors.red),
       ],
     );
   }
@@ -245,9 +252,10 @@ class _MacroRow extends StatelessWidget {
 class _MacroItem extends StatelessWidget {
   final String label;
   final double value;
+  final String weightUnit;
   final Color color;
 
-  const _MacroItem({required this.label, required this.value, required this.color});
+  const _MacroItem({required this.label, required this.value, required this.weightUnit, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +271,7 @@ class _MacroItem extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              '${value.round()}g',
+              '${value.round()}$weightUnit',
               style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 12),
             ),
           ),

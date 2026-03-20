@@ -27,7 +27,10 @@ class WeeklyChartWidget extends StatelessWidget {
           child: BarChart(
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
-              maxY: data.map((e) => e.calories).reduce((a, b) => a > b ? a : b) + 500,
+              maxY: (data.map((e) => e.calories).reduce((a, b) => a > b ? a : b) > 
+                     data.map((e) => e.targetCalories).reduce((a, b) => a > b ? a : b)
+                     ? data.map((e) => e.calories).reduce((a, b) => a > b ? a : b)
+                     : data.map((e) => e.targetCalories).reduce((a, b) => a > b ? a : b)) + 200,
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipColor: (_) => theme.primaryColor,

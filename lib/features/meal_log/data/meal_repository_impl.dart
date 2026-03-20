@@ -47,32 +47,77 @@ class MealRepositoryImpl implements MealRepository {
   Future<Either<Failure, void>> saveMeal(ParsedMeal meal) async {
     try {
       final db = await _dbHelper.database;
-      final mealId = _uuid.v4();
+      final mealId = meal.mealId ?? _uuid.v4();
+      final isUpdate = meal.mealId != null;
 
       await db.transaction((txn) async {
+        if (isUpdate) {
+          // Delete existing record to overwrite
+          await txn.delete('meals', where: 'id = ?', whereArgs: [mealId]);
+          await txn.delete('meal_items', where: 'meal_id = ?', whereArgs: [mealId]);
+        }
+
         // Insert into meals table
+        // Ensure name starts with type for dashboard section matching
+        final normalizedType = meal.mealType[0].toUpperCase() + meal.mealType.substring(1).toLowerCase();
+        final finalName = meal.mealName.toLowerCase().startsWith(meal.mealType.toLowerCase())
+            ? meal.mealName
+            : "$normalizedType - ${meal.mealName}";
+
+        // Ensure meal_time includes a date for SQLite filter compatibility
+        String mealTimeStr = meal.mealTime;
+        if (!mealTimeStr.contains('T') && !mealTimeStr.contains('-')) {
+          // It's likely just a time like "08:30" or "morning"
+          final now = DateTime.now();
+          final dateStr = now.toIso8601String().split('T')[0];
+          
+          if (RegExp(r'^\d{1,2}:\d{2}').hasMatch(mealTimeStr)) {
+            // "08:30" -> "2026-03-20T08:30:00"
+            mealTimeStr = "${dateStr}T${mealTimeStr.length == 4 ? "0$mealTimeStr" : mealTimeStr}:00";
+          } else {
+            // "morning" or unknown -> use current time
+            mealTimeStr = now.toIso8601String();
+          }
+        }
+
         await txn.insert('meals', {
           'id': mealId,
-          'user_id': 'default_user', // Simplified for now
-          'name': meal.mealName,
-          'meal_time': DateTime.now().toIso8601String(),
+          'user_id': 'default_user',
+          'name': finalName,
+          'meal_time': mealTimeStr,
         });
 
         // Insert into meal_items table
         for (final item in meal.items) {
-          final foodItemId = _uuid.v4();
-          
-          // Check if food item exists or insert new one
-          await txn.insert('food_items', {
-            'id': foodItemId,
-            'name': item.name,
-            'calories': item.calories,
-            'protein': item.proteinG,
-            'carbs': item.carbsG,
-            'fat': item.fatG,
-            'serving_size': item.quantity,
-            'serving_unit': item.unit,
-          });
+          // Check if food item exists with same name and calories (minimal match)
+          final existingFoods = await txn.query(
+            'food_items',
+            where: 'name = ? AND calories = ?',
+            whereArgs: [item.name, item.calories],
+            limit: 1,
+          );
+
+          String foodItemId;
+          if (existingFoods.isNotEmpty) {
+            foodItemId = existingFoods.first['id'] as String;
+          } else {
+            foodItemId = _uuid.v4();
+            await txn.insert('food_items', {
+              'id': foodItemId,
+              'name': item.name,
+              'brand': 'Gemini Parsed',
+              'calories': item.calories,
+              'protein': item.proteinG,
+              'carbs': item.carbsG,
+              'fat': item.fatG,
+              'fiber': item.fiberG,
+              'sodium': item.sodiumMg,
+              'sugar': item.sugarG,
+              'serving_size': 1.0, // Default for library storage
+              'serving_unit': item.unit,
+              'is_custom': 1,
+            });
+          }
 
           await txn.insert('meal_items', {
             'id': _uuid.v4(),
@@ -101,8 +146,44 @@ class MealRepositoryImpl implements MealRepository {
 
   @override
   Future<Either<Failure, List<ParsedMeal>>> getMealsForDate(DateTime date) async {
-    // Basic implementation to fetch meals
-    return const Right([]);
+    try {
+      final dateStr = date.toIso8601String().split('T')[0];
+      final mealsData = await _dbHelper.getMealsByDate('default_user', dateStr);
+      
+      final List<ParsedMeal> result = [];
+      for (final m in mealsData) {
+        final mealId = m['id'] as String;
+        final itemsData = await _dbHelper.getMealItemsByMealId(mealId);
+        
+        final List<ParsedMealItem> items = itemsData.map((item) => ParsedMealItem(
+          name: item['name'] ?? 'Unknown',
+          quantity: (item['quantity'] as num?)?.toDouble() ?? 1.0,
+          unit: item['unit'] as String? ?? 'unit',
+          weightG: 0, 
+          calories: (item['calories'] as num?)?.toDouble() ?? 0.0,
+          proteinG: (item['protein'] as num?)?.toDouble() ?? 0.0,
+          carbsG: (item['carbs'] as num?)?.toDouble() ?? 0.0,
+          fatG: (item['fat'] as num?)?.toDouble() ?? 0.0,
+          servingDescription: '${item['quantity']} ${item['unit']}',
+        )).toList();
+
+        result.add(ParsedMeal(
+          mealId: mealId,
+          mealName: m['name'] as String? ?? 'New Meal',
+          mealTime: m['meal_time'] as String,
+          mealType: m['name'] as String, // Using name as type if no separate type
+          confidenceScore: 1.0,
+          totalCalories: (m['total_calories'] as num?)?.toDouble() ?? 0.0,
+          totalProteinG: items.fold(0, (s, i) => s + i.proteinG),
+          totalCarbsG: items.fold(0, (s, i) => s + i.carbsG),
+          totalFatG: items.fold(0, (s, i) => s + i.fatG),
+          items: items,
+        ));
+      }
+      return Right(result);
+    } catch (e) {
+      return Left(DatabaseFailure('Failed to fetch meals: ${e.toString()}'));
+    }
   }
 
   @override

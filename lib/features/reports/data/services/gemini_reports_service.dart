@@ -19,9 +19,13 @@ class GeminiReportsService {
     if (apiKey == null) return "No API key found. Please add it in settings.";
 
     final model = GenerativeModel(
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       apiKey: apiKey,
     );
+
+    final proteinAvg = macros.isEmpty ? 0 : macros.map((e) => e.protein).reduce((a, b) => a + b) / macros.length;
+    final carbsAvg = macros.isEmpty ? 0 : macros.map((e) => e.carbs).reduce((a, b) => a + b) / macros.length;
+    final fatAvg = macros.isEmpty ? 0 : macros.map((e) => e.fat).reduce((a, b) => a + b) / macros.length;
 
     final prompt = """
     Act as a professional nutritionist. Analyze this user nutrition data for the last 7-30 days and provide:
@@ -31,11 +35,11 @@ class GeminiReportsService {
     4. Nutrient gap summary.
 
     DATA:
-    - Calories Trend: ${calories.map((e) => "${e.date}: ${e.value}kcal").join(", ")}
-    - Top Foods: ${topFoods.map((e) => "${e.name} (${e.frequency} times)").join(", ")}
-    - Macro Avg: Protein: ${macros.map((e) => e.protein).reduce((a, b) => a + b) / macros.length}g, 
-                Carbs: ${macros.map((e) => e.carbs).reduce((a, b) => a + b) / macros.length}g, 
-                Fat: ${macros.map((e) => e.fat).reduce((a, b) => a + b) / macros.length}g
+    - Calories Trend: ${calories.isEmpty ? "No data" : calories.map((e) => "${e.date}: ${e.value}kcal").join(", ")}
+    - Top Foods: ${topFoods.isEmpty ? "No data" : topFoods.map((e) => "${e.name} (${e.frequency} times)").join(", ")}
+    - Macro Avg: Protein: ${proteinAvg.toStringAsFixed(1)}g, 
+                Carbs: ${carbsAvg.toStringAsFixed(1)}g, 
+                Fat: ${fatAvg.toStringAsFixed(1)}g
     - Micronutrients: Fiber: ${micros.fiber}g, Sodium: ${micros.sodium}mg, Potassium: ${micros.potassium}mg
 
     Format the response as beautiful markdown with emojis. Be encouraging but scientific.

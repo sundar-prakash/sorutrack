@@ -27,6 +27,14 @@ class _ReportsMainScreenState extends State<ReportsMainScreen> with SingleTicker
   void initState() {
     super.initState();
     _tabController = TabController(length: 6, vsync: this);
+    
+    // Initial data load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final filterState = context.read<ReportFilterCubit>().state;
+        context.read<ReportsCubit>().loadReports(filterState, 'default_user');
+      }
+    });
   }
 
   @override
@@ -59,166 +67,176 @@ class _ReportsMainScreenState extends State<ReportsMainScreen> with SingleTicker
       ),
       body: Screenshot(
         controller: _screenshotController,
-        child: BlocBuilder<ReportFilterCubit, ReportFilterState>(
-          builder: (context, filterState) {
-            // Trigger data load when filter changes
+        child: BlocListener<ReportFilterCubit, ReportFilterState>(
+          listener: (context, filterState) {
             context.read<ReportsCubit>().loadReports(filterState, 'default_user');
-
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                _OverviewTab(),
-                _NutritionTab(),
-                _BodyTab(),
-                _FoodDiaryTab(),
-                _GoalsTab(),
-                _InsightsTab(),
-              ],
-            );
           },
+          child: BlocBuilder<ReportFilterCubit, ReportFilterState>(
+            builder: (context, filterState) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _OverviewTab(),
+                  _NutritionTab(),
+                  _BodyTab(),
+                  _FoodDiaryTab(),
+                  _GoalsTab(),
+                  _InsightsTab(),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
   void _showExportOptions(BuildContext context) {
+    final reportsCubit = context.read<ReportsCubit>();
     showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return BlocBuilder<ReportsCubit, ReportsState>(
-          builder: (context, state) {
-            return SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.picture_as_pdf),
-                    title: const Text('Export as PDF'),
-                    onTap: () {
-                      if (state is ReportsLoaded) {
-                        ExportService.exportToPdf(
-                          calorieTrend: state.calorieTrend,
-                          macroTrend: state.macroTrend,
-                          topFoods: state.topFoods,
-                        );
-                      }
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.table_chart),
-                    title: const Text('Export Food Diary as CSV'),
-                    onTap: () {
-                      if (state is ReportsLoaded) {
-                        ExportService.exportToCsv(state.foodDiary);
-                      }
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.grid_on),
-                    title: const Text('Export Food Diary as Excel'),
-                    onTap: () {
-                      if (state is ReportsLoaded) {
-                        ExportService.exportToExcel(state.foodDiary);
-                      }
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.camera_alt),
-                    title: const Text('Share Screenshot'),
-                    onTap: () async {
-                       final image = await _screenshotController.capture();
-                       if (image != null) {
-                         // Save and share logic
-                         final directory = await getTemporaryDirectory();
-                         final file = File('${directory.path}/report_screenshot.png');
-                         await file.writeAsBytes(image);
-                         await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'My Nutrition Report'));
-                       }
-                       if (context.mounted) {
-                         Navigator.pop(context);
-                       }
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: reportsCubit,
+          child: BlocBuilder<ReportsCubit, ReportsState>(
+            builder: (context, state) {
+              return SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.picture_as_pdf),
+                      title: const Text('Export as PDF'),
+                      onTap: () {
+                        if (state is ReportsLoaded) {
+                          ExportService.exportToPdf(
+                            calorieTrend: state.calorieTrend,
+                            macroTrend: state.macroTrend,
+                            topFoods: state.topFoods,
+                          );
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.table_chart),
+                      title: const Text('Export Food Diary as CSV'),
+                      onTap: () {
+                        if (state is ReportsLoaded) {
+                          ExportService.exportToCsv(state.foodDiary);
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.grid_on),
+                      title: const Text('Export Food Diary as Excel'),
+                      onTap: () {
+                        if (state is ReportsLoaded) {
+                          ExportService.exportToExcel(state.foodDiary);
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.camera_alt),
+                      title: const Text('Share Screenshot'),
+                      onTap: () async {
+                         final image = await _screenshotController.capture();
+                         if (image != null) {
+                           // Save and share logic
+                           final directory = await getTemporaryDirectory();
+                           final file = File('${directory.path}/report_screenshot.png');
+                           await file.writeAsBytes(image);
+                           await Share.shareXFiles([XFile(file.path)], text: 'My Nutrition Report');
+                         }
+                         if (context.mounted) {
+                           Navigator.pop(context);
+                         }
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
   }
 
   void _showDateRangePicker(BuildContext context) {
+    final filterCubit = context.read<ReportFilterCubit>();
     showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return BlocBuilder<ReportFilterCubit, ReportFilterState>(
-          builder: (context, state) {
-            return SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    title: const Text('Today'),
-                    trailing: state.rangeType == DateRangeType.today ? const Icon(Icons.check) : null,
-                    onTap: () {
-                      context.read<ReportFilterCubit>().setRange(DateRangeType.today);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('This Week'),
-                    trailing: state.rangeType == DateRangeType.thisWeek ? const Icon(Icons.check) : null,
-                    onTap: () {
-                      context.read<ReportFilterCubit>().setRange(DateRangeType.thisWeek);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('This Month'),
-                    trailing: state.rangeType == DateRangeType.thisMonth ? const Icon(Icons.check) : null,
-                    onTap: () {
-                      context.read<ReportFilterCubit>().setRange(DateRangeType.thisMonth);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Last 30 Days'),
-                    trailing: state.rangeType == DateRangeType.last30Days ? const Icon(Icons.check) : null,
-                    onTap: () {
-                      context.read<ReportFilterCubit>().setRange(DateRangeType.last30Days);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Custom Range'),
-                    trailing: state.rangeType == DateRangeType.custom ? const Icon(Icons.check) : null,
-                    onTap: () async {
-                      final navigator = Navigator.of(context);
-                      final scaffold = context;
-                      final picked = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime.now(),
-                      );
-                      if (!scaffold.mounted) return;
-                      if (picked != null) {
-                        scaffold.read<ReportFilterCubit>().setRange(
-                          DateRangeType.custom,
-                          customStart: picked.start,
-                          customEnd: picked.end,
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: filterCubit,
+          child: BlocBuilder<ReportFilterCubit, ReportFilterState>(
+            builder: (context, state) {
+              return SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      title: const Text('Today'),
+                      trailing: state.rangeType == DateRangeType.today ? const Icon(Icons.check) : null,
+                      onTap: () {
+                        context.read<ReportFilterCubit>().setRange(DateRangeType.today);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('This Week'),
+                      trailing: state.rangeType == DateRangeType.thisWeek ? const Icon(Icons.check) : null,
+                      onTap: () {
+                        context.read<ReportFilterCubit>().setRange(DateRangeType.thisWeek);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('This Month'),
+                      trailing: state.rangeType == DateRangeType.thisMonth ? const Icon(Icons.check) : null,
+                      onTap: () {
+                        context.read<ReportFilterCubit>().setRange(DateRangeType.thisMonth);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Last 30 Days'),
+                      trailing: state.rangeType == DateRangeType.last30Days ? const Icon(Icons.check) : null,
+                      onTap: () {
+                        context.read<ReportFilterCubit>().setRange(DateRangeType.last30Days);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Custom Range'),
+                      trailing: state.rangeType == DateRangeType.custom ? const Icon(Icons.check) : null,
+                      onTap: () async {
+                        final navigator = Navigator.of(context);
+                        final scaffold = context;
+                        final picked = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
                         );
-                      }
-                      navigator.pop();
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
+                        if (!scaffold.mounted) return;
+                        if (picked != null) {
+                          scaffold.read<ReportFilterCubit>().setRange(
+                            DateRangeType.custom,
+                            customStart: picked.start,
+                            customEnd: picked.end,
+                          );
+                        }
+                        navigator.pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -313,7 +331,6 @@ class _OverviewTab extends StatelessWidget {
   }
 }
 
-// Placeholder tabs - will implement in next steps
 class _NutritionTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -419,80 +436,84 @@ class _FoodDiaryTab extends StatelessWidget {
   }
 
   void _showFilterSheet(BuildContext context) {
+    final filterCubit = context.read<ReportFilterCubit>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
-        return BlocBuilder<ReportFilterCubit, ReportFilterState>(
-          builder: (context, state) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Filters', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  const Text('Meal Types'),
-                  Wrap(
-                    spacing: 8,
-                    children: ['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map((type) {
-                      final isSelected = state.mealTypes.contains(type);
-                      return FilterChip(
-                        label: Text(type),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          final newList = List<String>.from(state.mealTypes);
-                          if (selected) {
-                            newList.add(type);
-                          } else {
-                            newList.remove(type);
-                          }
-                          context.read<ReportFilterCubit>().updateFilters(mealTypes: newList);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Calories Range'),
-                  RangeSlider(
-                    values: RangeValues(state.minCalories ?? 0, state.maxCalories ?? 2000),
-                    min: 0,
-                    max: 2000,
-                    divisions: 20,
-                    labels: RangeLabels(
-                      (state.minCalories ?? 0).toStringAsFixed(0),
-                      (state.maxCalories ?? 2000).toStringAsFixed(0),
+      builder: (modalContext) {
+        return BlocProvider.value(
+          value: filterCubit,
+          child: BlocBuilder<ReportFilterCubit, ReportFilterState>(
+            builder: (context, state) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Filters', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    const Text('Meal Types'),
+                    Wrap(
+                      spacing: 8,
+                      children: ['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map((type) {
+                        final isSelected = state.mealTypes.contains(type);
+                        return FilterChip(
+                          label: Text(type),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            final newList = List<String>.from(state.mealTypes);
+                            if (selected) {
+                              newList.add(type);
+                            } else {
+                              newList.remove(type);
+                            }
+                            context.read<ReportFilterCubit>().updateFilters(mealTypes: newList);
+                          },
+                        );
+                      }).toList(),
                     ),
-                    onChanged: (values) {
-                      context.read<ReportFilterCubit>().updateFilters(
-                        minCalories: values.start,
-                        maxCalories: values.end,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Center(child: Text('Apply Filters')),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context.read<ReportFilterCubit>().resetFilters();
-                      Navigator.pop(context);
-                    },
-                    child: const Center(child: Text('Reset')),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 16),
+                    const Text('Calories Range'),
+                    RangeSlider(
+                      values: RangeValues(state.minCalories ?? 0, state.maxCalories ?? 2000),
+                      min: 0,
+                      max: 2000,
+                      divisions: 20,
+                      labels: RangeLabels(
+                        (state.minCalories ?? 0).toStringAsFixed(0),
+                        (state.maxCalories ?? 2000).toStringAsFixed(0),
+                      ),
+                      onChanged: (values) {
+                        context.read<ReportFilterCubit>().updateFilters(
+                          minCalories: values.start,
+                          maxCalories: values.end,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Center(child: Text('Apply Filters')),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<ReportFilterCubit>().resetFilters();
+                        Navigator.pop(context);
+                      },
+                      child: const Center(child: Text('Reset')),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );

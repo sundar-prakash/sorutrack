@@ -16,12 +16,19 @@ abstract class DataManagementEvent extends Equatable {
 class ExportDataRequested extends DataManagementEvent {
   final String userId;
   final String format; // json, csv, excel, pdf
-  ExportDataRequested(this.userId, this.format);
+  final String? targetPath;
+  ExportDataRequested(this.userId, this.format, {this.targetPath});
 }
 
 class CreateBackupRequested extends DataManagementEvent {
   final String? password; // If null, raw backup
-  CreateBackupRequested({this.password});
+  final String? targetPath;
+  CreateBackupRequested({this.password, this.targetPath});
+}
+
+class CreateCircularBackupRequested extends DataManagementEvent {
+  final String directoryPath;
+  CreateCircularBackupRequested(this.directoryPath);
 }
 
 class RestoreBackupRequested extends DataManagementEvent {
@@ -74,6 +81,7 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
   ) : super(DataManagementInitial()) {
     on<ExportDataRequested>(_onExportRequested);
     on<CreateBackupRequested>(_onCreateBackupRequested);
+    on<CreateCircularBackupRequested>(_onCreateCircularBackupRequested);
     on<RestoreBackupRequested>(_onRestoreBackupRequested);
     on<ImportDataRequested>(_onImportRequested);
     on<ClearAllDataRequested>(_onClearAllDataRequested);
@@ -90,6 +98,20 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
         case 'pdf': path = await _exportService.generatePdfReport(event.userId); break;
         default: throw Exception('Unsupported format');
       }
+
+      if (event.targetPath != null) {
+        final sourceFile = File(path);
+        final targetFile = File(event.targetPath!);
+        if (!await targetFile.parent.exists()) {
+          await targetFile.parent.create(recursive: true);
+        }
+        await sourceFile.copy(event.targetPath!);
+        path = event.targetPath!;
+      } else {
+        // Trigger native share dialog only if no specific path was chosen
+        await _exportService.shareFile(path);
+      }
+
       emit(DataManagementSuccess('Export completed successfully', filePath: path));
     } catch (e) {
       emit(DataManagementFailure(e.toString()));
@@ -101,11 +123,17 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
     try {
       File backup;
       if (event.password != null && event.password!.isNotEmpty) {
-        backup = await _backupService.createEncryptedBackup(event.password!);
+        backup = await _backupService.createEncryptedBackup(event.password!, targetPath: event.targetPath);
       } else {
-        backup = await _backupService.createFullBackup();
+        backup = await _backupService.createFullBackup(targetPath: event.targetPath);
       }
-      emit(DataManagementSuccess('Backup created: ${backup.path.split('/').last}'));
+
+      if (event.targetPath == null) {
+        // Trigger native share dialog only if no specific path was chosen
+        await _exportService.shareFile(backup.path);
+      }
+
+      emit(DataManagementSuccess('Backup created: ${backup.path.split(Platform.pathSeparator).last}'));
     } catch (e) {
       emit(DataManagementFailure(e.toString()));
     }
@@ -118,9 +146,7 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
         await _backupService.restoreFromEncryptedBackup(event.file, event.password!);
       } else {
         // Raw restore (copying over .db)
-        // Note: For simplicity, assuming caller handles file swap or we handle it here
-        final dbPath = await _backupService.createFullBackup(); // Just to get the path
-        await event.file.copy(dbPath.path.replaceAll(RegExp(r'backup_.*\.db'), 'sorutrack_pro.db'));
+        await _backupService.restoreRawBackup(event.file);
       }
       emit(DataManagementSuccess('Restore successful. Please restart the app.'));
     } catch (e) {
@@ -142,6 +168,16 @@ class DataManagementBloc extends Bloc<DataManagementEvent, DataManagementState> 
       
       final result = await _importService.importData(event.userId, data);
       emit(DataManagementSuccess('Imported ${result.imported} logs. Errors: ${result.errors}'));
+    } catch (e) {
+      emit(DataManagementFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onCreateCircularBackupRequested(CreateCircularBackupRequested event, Emitter<DataManagementState> emit) async {
+    emit(DataManagementLoading('Creating circular backup in ${event.directoryPath}...'));
+    try {
+      final backup = await _backupService.createCircularBackup(event.directoryPath);
+      emit(DataManagementSuccess('Daily backup created: ${backup.path.split(Platform.pathSeparator).last}'));
     } catch (e) {
       emit(DataManagementFailure(e.toString()));
     }

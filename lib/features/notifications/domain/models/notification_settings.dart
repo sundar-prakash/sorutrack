@@ -32,7 +32,7 @@ class NotificationSettings extends Equatable {
     this.dinnerTime = '19:30',
     this.waterIntervalHours = 2,
     this.sleepStartTime = '22:00',
-    this.sleepEndTime = '07:00',
+    this.sleepEndTime = '08:30', // Changed from 07:00 to 08:30 to offset from breakfast
   });
 
   factory NotificationSettings.defaultSettings() => const NotificationSettings();

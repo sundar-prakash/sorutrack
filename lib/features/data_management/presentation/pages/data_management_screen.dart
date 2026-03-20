@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:universal_platform/universal_platform.dart';
 import 'package:sorutrack_pro/features/data_management/presentation/bloc/data_management_bloc.dart';
 
 class DataManagementScreen extends StatefulWidget {
@@ -69,9 +70,9 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (state is DataManagementLoading)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: LinearProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor)),
+                  const SizedBox(
+                    height: 4,
+                    child: LinearProgressIndicator(),
                   ),
 
                 FadeInUp(
@@ -103,15 +104,55 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
                         icon: Icons.backup,
                         title: 'Create Full Backup',
                         subtitle: 'Raw SQLite binary file',
-                        onTap: () => context.read<DataManagementBloc>().add(CreateBackupRequested()),
+                        onTap: () async {
+                          final bloc = context.read<DataManagementBloc>();
+                          if (UniversalPlatform.isDesktop) {
+                            final String? selectedPath = await FilePicker.platform.saveFile(
+                              dialogTitle: 'Save Full Backup',
+                              fileName: 'sorutrack_backup_${DateTime.now().millisecondsSinceEpoch}.db',
+                              type: FileType.any,
+                            );
+                            if (selectedPath != null) {
+                              bloc.add(CreateBackupRequested(targetPath: selectedPath));
+                            }
+                          } else {
+                            // Mobile/Web fallback: Save internally and share
+                            bloc.add(CreateBackupRequested());
+                          }
+                        },
                       ),
                       _buildActionTile(
                         icon: Icons.security,
                         title: 'Create Secure Backup',
                         subtitle: 'Encrypted .SoruTackbackup file',
-                        onTap: () => _showPasswordDialog(context, onConfirm: (pw) {
-                          context.read<DataManagementBloc>().add(CreateBackupRequested(password: pw));
+                        onTap: () => _showPasswordDialog(context, onConfirm: (pw) async {
+                          final bloc = context.read<DataManagementBloc>();
+                          if (UniversalPlatform.isDesktop) {
+                            final String? selectedPath = await FilePicker.platform.saveFile(
+                              dialogTitle: 'Save Secure Backup',
+                              fileName: 'sorutrack_secure_${DateTime.now().millisecondsSinceEpoch}.SoruTackbackup',
+                              type: FileType.any,
+                            );
+                            if (selectedPath != null) {
+                              bloc.add(CreateBackupRequested(password: pw, targetPath: selectedPath));
+                            }
+                          } else {
+                            // Mobile fallback
+                            bloc.add(CreateBackupRequested(password: pw));
+                          }
                         }),
+                      ),
+                      _buildActionTile(
+                        icon: Icons.loop,
+                        title: 'Daily Circular Backup (4 Days)',
+                        subtitle: 'Creates "sorutrack" folder in chosen location',
+                        onTap: () async {
+                          final scaffold = context;
+                          final String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+                          if (selectedDirectory != null && scaffold.mounted) {
+                            scaffold.read<DataManagementBloc>().add(CreateCircularBackupRequested(selectedDirectory));
+                          }
+                        },
                       ),
                       _buildActionTile(
                         icon: Icons.restore,
@@ -239,15 +280,33 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     return ListTile(
       leading: Icon(icon, color: Colors.blueGrey),
       title: Text(label),
-      trailing: ElevatedButton(
-        onPressed: () => context.read<DataManagementBloc>().add(ExportDataRequested('user_123', format)),
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.grey[100],
-          foregroundColor: Colors.black87,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      trailing: SizedBox(
+        width: 100,
+        child: ElevatedButton(
+          onPressed: () async {
+            final bloc = context.read<DataManagementBloc>();
+            if (UniversalPlatform.isDesktop) {
+              final String? selectedPath = await FilePicker.platform.saveFile(
+                dialogTitle: 'Export $label',
+                fileName: 'sorutrack_export_${DateTime.now().millisecondsSinceEpoch}.$format',
+                type: FileType.any,
+              );
+              if (selectedPath != null) {
+                bloc.add(ExportDataRequested('user_123', format, targetPath: selectedPath));
+              }
+            } else {
+              // Mobile fallback
+              bloc.add(ExportDataRequested('user_123', format));
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            backgroundColor: Colors.grey[100],
+            foregroundColor: Colors.black87,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          child: const Text('Export'),
         ),
-        child: const Text('Export'),
       ),
     );
   }

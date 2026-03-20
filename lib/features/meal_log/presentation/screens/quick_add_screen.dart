@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../bloc/meal_log_bloc.dart';
 import '../bloc/meal_log_event.dart';
 import '../bloc/meal_log_state.dart';
 import 'parsed_results_screen.dart';
 
 class QuickAddScreen extends StatefulWidget {
-  const QuickAddScreen({super.key});
+  final String? initialMealType;
+  const QuickAddScreen({super.key, this.initialMealType});
 
   @override
   State<QuickAddScreen> createState() => _QuickAddScreenState();
@@ -16,8 +18,18 @@ class QuickAddScreen extends StatefulWidget {
 
 class _QuickAddScreenState extends State<QuickAddScreen> {
   final _inputController = TextEditingController();
-  String _selectedMealType = 'Breakfast';
+  late String _selectedMealType;
   DateTime _selectedTime = DateTime.now();
+  
+  // Speech to text
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMealType = widget.initialMealType ?? 'Breakfast';
+  }
 
   final List<String> _mealTypes = [
     'Breakfast',
@@ -44,14 +56,44 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
         );
   }
 
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) {
+           if (val == 'done' || val == 'notListening') {
+             setState(() => _isListening = false);
+           }
+        },
+        onError: (val) => debugPrint('STT Error: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) => setState(() {
+            _inputController.text = val.recognizedWords;
+          }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MealLogBloc, MealLogState>(
       listener: (context, state) {
         state.maybeWhen(
           reviewing: (meal) {
+            final bloc = context.read<MealLogBloc>();
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => ParsedResultsScreen(meal: meal)),
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: bloc,
+                  child: ParsedResultsScreen(meal: meal),
+                ),
+              ),
             );
           },
           error: (message) {
@@ -82,10 +124,26 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.network(
-            'https://assets9.lottiefiles.com/packages/lf20_m6cu9rqa.json', // Healthy food animation
+          Lottie.asset(
+            'assets/loading-animation.json',
             width: 200,
             height: 200,
+            repeat: true,
+            frameRate: FrameRate.max,
+            errorBuilder: (context, error, stackTrace) {
+              return SizedBox(
+                width: 200,
+                height: 200,
+                child: Center(
+                  child: ZoomIn(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 24),
           FadeInUp(
@@ -119,10 +177,11 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
               hintText: 'e.g., "I ate 4 idly and sambar this morning"',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.mic),
-                onPressed: () {
-                    // Speech to text placeholder
-                },
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  color: _isListening ? Colors.red : null,
+                ),
+                onPressed: _listen,
               ),
             ),
           ),

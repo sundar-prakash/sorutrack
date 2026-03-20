@@ -122,9 +122,9 @@ class _AchievementDialogState extends State<AchievementDialog> {
                   ),
                   TextButton(
                     onPressed: () {
-                      SharePlus.instance.share(ShareParams(
-                        text: 'I just earned the ${widget.badge.name} badge on SoruTrack Pro! 🏆\n${widget.badge.description}',
-                      ));
+                      Share.share(
+                        'I just earned the ${widget.badge.name} badge on SoruTrack Pro! 🏆\n${widget.badge.description}',
+                      );
                     },
                     child: const Text('Share Achievement'),
                   ),

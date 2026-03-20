@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../features/auth/presentation/cubit/profile_cubit.dart';
+import '../../features/auth/domain/models/auth_enums.dart';
+import '../../core/utils/unit_helper.dart';
 
 class FoodItemCard extends StatefulWidget {
   final String title;
@@ -43,95 +47,105 @@ class _FoodItemCardState extends State<FoodItemCard>
 
     return FadeInUp(
       duration: const Duration(milliseconds: 400),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: widget.onTap ?? _toggleExpand,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, profileState) {
+          final useMetric = profileState.maybeWhen(
+            loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+            orElse: () => true,
+          );
+          final unitHelper = UnitHelper(useMetric: useMetric);
+
+          return Card(
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: widget.onTap ?? _toggleExpand,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.title,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.subtitle,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${widget.calories}',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'kcal',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (widget.trailing != null) ...[
-                      const SizedBox(width: 12),
-                      widget.trailing!,
-                    ],
-                  ],
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: _isExpanded
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _MacroPill(
-                                  label: 'Protein',
-                                  value: '${widget.protein}g',
-                                  color: Colors.red.shade400),
-                              _MacroPill(
-                                  label: 'Carbs',
-                                  value: '${widget.carbs}g',
-                                  color: Colors.blue.shade400),
-                              _MacroPill(
-                                  label: 'Fat',
-                                  value: '${widget.fat}g',
-                                  color: Colors.orange.shade400),
+                              Text(
+                                widget.title,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.subtitle,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                                ),
+                              ),
                             ],
                           ),
-                        )
-                      : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${widget.calories}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              unitHelper.energyUnit,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (widget.trailing != null) ...[
+                          const SizedBox(width: 12),
+                          widget.trailing!,
+                        ],
+                      ],
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: _isExpanded
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  _MacroPill(
+                                      label: 'Protein',
+                                      value: '${widget.protein}${unitHelper.weightUnit}',
+                                      color: Colors.red.shade400),
+                                  _MacroPill(
+                                      label: 'Carbs',
+                                      value: '${widget.carbs}${unitHelper.weightUnit}',
+                                      color: Colors.blue.shade400),
+                                  _MacroPill(
+                                      label: 'Fat',
+                                      value: '${widget.fat}${unitHelper.weightUnit}',
+                                      color: Colors.orange.shade400),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

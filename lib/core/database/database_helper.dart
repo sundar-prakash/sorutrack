@@ -49,17 +49,35 @@ class DatabaseHelper {
       path = join(dbPath, 'sorutrack_pro.db');
     }
     _logger.i('Opening database at: $path');
+    
+    Database db;
+    try {
+      db = await openDatabase(
+        path,
+        version: DatabaseMigration.currentVersion,
+        onCreate: _onCreate,
+        onConfigure: _onConfigure,
+        onUpgrade: (db, oldVersion, newVersion) async {
+          _logger.i('Upgrading database from $oldVersion to $newVersion');
+          await DatabaseMigration.migrate(db, oldVersion, newVersion);
+        },
+      );
+    } catch (e) {
+      if (e.toString().contains('no such module: fts5')) {
+        _logger.e('Critical FTS5 module missing but table exists. Deleting database to resolve deadlock.');
+        await deleteDatabase(path);
+        // Retry exactly once after deletion
+        db = await openDatabase(
+          path,
+          version: DatabaseMigration.currentVersion,
+          onCreate: _onCreate,
+          onConfigure: _onConfigure,
+        );
+      } else {
+        rethrow;
+      }
+    }
 
-    final db = await openDatabase(
-      path,
-      version: DatabaseMigration.currentVersion,
-      onCreate: _onCreate,
-      onConfigure: _onConfigure,
-      onUpgrade: (db, oldVersion, newVersion) async {
-        _logger.i('Upgrading database from $oldVersion to $newVersion');
-        await DatabaseMigration.migrate(db, oldVersion, newVersion);
-      },
-    );
     _logger.i('Database opened successfully.');
 
     // Phase 9: Copy and merge bundled food database if needed
@@ -136,9 +154,11 @@ class DatabaseHelper {
   Future<void> _onConfigure(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON');
     if (!UniversalPlatform.isWeb) {
-      await db.execute('PRAGMA journal_mode = WAL');
+      // Use rawQuery for PRAGMA journal_mode as it returns a result which can cause 
+      // SqfliteDatabaseException on some Android versions if execute() is used.
+      await db.rawQuery('PRAGMA journal_mode = WAL');
     }
-    await db.execute('PRAGMA synchronous = NORMAL');
+    await db.rawQuery('PRAGMA synchronous = NORMAL');
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -491,23 +511,47 @@ class DatabaseHelper {
       )
     ''');
 
-    // Foods FTS Table
-    await db.execute('CREATE VIRTUAL TABLE foods_fts USING fts5(food_id UNINDEXED, name, brand, category)');
+    // Foods FTS Table with robust detection and different name to avoid poisoned table state
+    bool fts5Supported = false;
+    try {
+      await db.execute('CREATE VIRTUAL TABLE fts5_test USING fts5(dummy)');
+      await db.execute('DROP TABLE fts5_test');
+      fts5Supported = true;
+    } catch (_) {}
+
+    if (fts5Supported) {
+      await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS food_items_fts USING fts5(food_id UNINDEXED, name, brand, category)');
+      _logger.i('FTS5 table created successfully.');
+    } else {
+      bool fts4Supported = false;
+      try {
+        await db.execute('CREATE VIRTUAL TABLE fts4_test USING fts4(dummy)');
+        await db.execute('DROP TABLE fts4_test');
+        fts4Supported = true;
+      } catch (_) {}
+
+      if (fts4Supported) {
+        await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS food_items_fts USING fts4(food_id, name, brand, category, notindexed=food_id)');
+        _logger.i('FTS4 table created successfully.');
+      } else {
+        await db.execute('CREATE TABLE IF NOT EXISTS food_items_fts (food_id TEXT, name TEXT, brand TEXT, category TEXT)');
+      }
+    }
 
     // Foods FTS Triggers
     await db.execute('''
       CREATE TRIGGER food_items_ai AFTER INSERT ON food_items BEGIN
-        INSERT INTO foods_fts(food_id, name, brand, category) VALUES (new.id, new.name, new.brand, new.category);
+        INSERT INTO food_items_fts(food_id, name, brand, category) VALUES (new.id, new.name, new.brand, new.category);
       END;
     ''');
     await db.execute('''
       CREATE TRIGGER food_items_ad AFTER DELETE ON food_items BEGIN
-        DELETE FROM foods_fts WHERE food_id = old.id;
+        DELETE FROM food_items_fts WHERE food_id = old.id;
       END;
     ''');
     await db.execute('''
       CREATE TRIGGER food_items_au AFTER UPDATE ON food_items BEGIN
-        UPDATE foods_fts SET name = new.name, brand = new.brand, category = new.category WHERE food_id = old.id;
+        UPDATE food_items_fts SET name = new.name, brand = new.brand, category = new.category WHERE food_id = old.id;
       END;
     ''');
 
@@ -594,11 +638,12 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getMealItemsByMealId(String mealId) async {
     final db = await database;
-    return await db.query(
-      'meal_items',
-      where: 'meal_id = ? AND deleted_at IS NULL',
-      whereArgs: [mealId],
-    );
+    return await db.rawQuery('''
+      SELECT mi.*, fi.name as name
+      FROM meal_items mi
+      JOIN food_items fi ON mi.food_item_id = fi.id
+      WHERE mi.meal_id = ? AND mi.deleted_at IS NULL
+    ''', [mealId]);
   }
 
   Future<List<Map<String, dynamic>>> getWeeklyCalories(String userId) async {

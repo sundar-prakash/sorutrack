@@ -249,19 +249,11 @@ class _NotificationSettingsScreenState
 
   Future<void> _previewNotification() async {
     final service = getIt<NotificationService>();
-    final hasPermission = await service.requestPermissions();
-    if (hasPermission) {
-      await service.showNotification(
-        id: 999,
-        title: "SoruTrack Pro Preview! 🚀",
-        body: "Checking if notifications are working beautifully.",
-      );
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notification permissions are disabled.')),
-        );
-      }
-    }
+    await service.requestPermissions();
+    await service.showNotification(
+      id: 999,
+      title: "SoruTrack Pro Preview! 🚀",
+      body: "Checking if notifications are working beautifully.",
+    );
   }
 }

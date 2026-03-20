@@ -6,6 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sorutrack_pro/shared/theme/theme_cubit.dart';
 import 'package:sorutrack_pro/features/data_management/presentation/bloc/data_management_bloc.dart';
+import 'package:sorutrack_pro/core/services/gemini_key_service.dart';
+import 'package:sorutrack_pro/core/di/injection.dart';
+import 'package:sorutrack_pro/features/auth/presentation/cubit/profile_cubit.dart';
+import 'package:sorutrack_pro/features/auth/domain/models/auth_enums.dart';
+import 'package:sorutrack_pro/features/notifications/data/services/notification_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -50,25 +55,117 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showClearDataDialog() {
+  void _showGeminiKeyDialog() async {
+    final service = getIt<GeminiKeyService>();
+    final currentKey = await service.getKey() ?? '';
+    final controller = TextEditingController(text: currentKey);
+    bool isValidating = false;
+    ApiKeyValidationResult? testResult;
+
+    if (!mounted) return;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Data?'),
-        content: const Text('This will delete all your meals, weight history, and settings. This cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CANCEL'),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Gemini API Settings'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter your Google Gemini API Key to enable AI features.'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: 'API Key',
+                  hintText: 'AIza...',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+              ),
+              if (testResult != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(
+                      testResult == ApiKeyValidationResult.valid 
+                          ? Icons.check_circle_outline 
+                          : Icons.error_outline,
+                      color: testResult == ApiKeyValidationResult.valid ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      testResult == ApiKeyValidationResult.valid ? 'Key is valid' : 'Key is invalid',
+                      style: TextStyle(
+                        color: testResult == ApiKeyValidationResult.valid ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              context.read<DataManagementBloc>().add(ClearAllDataRequested());
-              Navigator.pop(context);
-            },
-            child: Text('CLEAR', style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: isValidating ? null : () async {
+                setDialogState(() => isValidating = true);
+                final result = await service.validateKey(controller.text.trim());
+                setDialogState(() {
+                  isValidating = false;
+                  testResult = result;
+                });
+              },
+              child: isValidating 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) 
+                  : const Text('TEST KEY'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final key = controller.text.trim();
+                await service.saveKey(key);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('API Key saved')),
+                  );
+                }
+              },
+              child: const Text('SAVE'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showClearDataDialog() {
+    final bloc = context.read<DataManagementBloc>();
+    showDialog(
+      context: context,
+      builder: (context) => BlocProvider.value(
+        value: bloc,
+        child: AlertDialog(
+          title: const Text('Clear All Data?'),
+          content: const Text('This will delete all your meals, weight history, and settings. This cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<DataManagementBloc>().add(ClearAllDataRequested());
+                Navigator.pop(context);
+              },
+              child: Text('CLEAR', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -123,14 +220,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-          SwitchListTile(
-            secondary: const Icon(Icons.square_foot_outlined),
-            title: const Text('Use Metric System'),
-            subtitle: Text(_useMetric ? 'kg, cm, ml' : 'lbs, ft/in, oz'),
-            value: _useMetric,
-            onChanged: (val) {
-              setState(() => _useMetric = val);
-              _savePreference('useMetric', val);
+          BlocBuilder<ProfileCubit, ProfileState>(
+            builder: (context, state) {
+              final useMetric = state.maybeWhen(
+                loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+                orElse: () => _useMetric, // Fallback to local if not loaded
+              );
+              
+              return SwitchListTile(
+                secondary: const Icon(Icons.square_foot_outlined),
+                title: const Text('Use Metric System'),
+                subtitle: Text(useMetric ? 'kg, cm, ml' : 'lbs, ft/in, oz'),
+                value: useMetric,
+                onChanged: null, /* (val) {
+                  setState(() => _useMetric = val);
+                  _savePreference('useMetric', val);
+                  
+                  state.maybeWhen(
+                    loaded: (profile, _, __, ___, ____, _____, ______) {
+                      final newWeightUnit = val ? WeightUnit.kg : WeightUnit.lbs;
+                      final newHeightUnit = val ? HeightUnit.cm : HeightUnit.ft;
+                      
+                      double newWeight = profile.weight;
+                      double newTargetWeight = profile.targetWeight;
+                      double newHeight = profile.height;
+                      
+                      if (val) {
+                        // Switching to Metric
+                        newWeight = NutritionEngine.lbsToKg(profile.weight);
+                        newTargetWeight = NutritionEngine.lbsToKg(profile.targetWeight);
+                        newHeight = NutritionEngine.ftToCm(profile.height);
+                      } else {
+                        // Switching to Imperial
+                        newWeight = NutritionEngine.kgToLbs(profile.weight);
+                        newTargetWeight = NutritionEngine.kgToLbs(profile.targetWeight);
+                        newHeight = NutritionEngine.cmToFt(profile.height);
+                      }
+                      
+                      final updatedProfile = profile.copyWith(
+                        weight: double.parse(newWeight.toStringAsFixed(1)),
+                        targetWeight: double.parse(newTargetWeight.toStringAsFixed(1)),
+                        height: double.parse(newHeight.toStringAsFixed(1)),
+                        weightUnit: newWeightUnit,
+                        heightUnit: newHeightUnit,
+                      );
+                      
+                      context.read<ProfileCubit>().updateProfile(updatedProfile);
+                    },
+                    orElse: () {},
+                  );
+                }, */
+              );
             },
           ),
 
@@ -139,8 +279,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             secondary: const Icon(Icons.restaurant_outlined),
             title: const Text('Meal Reminders'),
+            subtitle: const Text('8:00 AM · 1:00 PM · 8:00 PM'),
             value: _mealReminders,
-            onChanged: (val) {
+            onChanged: (val) async {
+              final ns = getIt<NotificationService>();
+              if (val) {
+                await ns.requestPermissions();
+                await ns.scheduleMealReminders();
+              } else {
+                await ns.cancelMealReminders();
+              }
               setState(() => _mealReminders = val);
               _savePreference('mealReminders', val);
             },
@@ -148,8 +296,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             secondary: const Icon(Icons.water_drop_outlined),
             title: const Text('Water Reminders'),
+            subtitle: const Text('8:30 AM · 1:30 PM · 6:00 PM'),
             value: _waterReminders,
-            onChanged: (val) {
+            onChanged: (val) async {
+              final ns = getIt<NotificationService>();
+              if (val) {
+                await ns.requestPermissions();
+                await ns.scheduleWaterReminders();
+              } else {
+                await ns.cancelWaterReminders();
+              }
               setState(() => _waterReminders = val);
               _savePreference('waterReminders', val);
             },
@@ -179,6 +335,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
 
           const Divider(),
+          _buildSectionHeader('AI Settings'),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome_outlined),
+            title: const Text('Gemini API Configuration'),
+            subtitle: const Text('Update Gemini API Key'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _showGeminiKeyDialog,
+          ),
+
+          const Divider(),
           _buildSectionHeader('About SoruTrack'),
           ListTile(
             leading: const Icon(Icons.info_outline),
@@ -201,12 +367,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.star_outline),
             title: const Text('Rate App'),
-            onTap: () => _launchUrl('https://play.google.com/store/apps/details?id=com.sorutrack.pro'),
+            onTap: () => _launchUrl('https://github.com/sundar-prakash/sorutrack'),
           ),
           ListTile(
             leading: const Icon(Icons.feedback_outlined),
             title: const Text('Send Feedback'),
-            onTap: () => _launchUrl('mailto:support@sorutrack.com?subject=SoruTrack Feedback'),
+            onTap: () => _launchUrl('mailto:psundarprakash603@gmail.com?subject=SoruTrack Pro Feedback'),
           ),
 
           if (kDebugMode) ...[

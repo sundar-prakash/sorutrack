@@ -9,4 +9,5 @@ class MealLogEvent with _$MealLogEvent {
   const factory MealLogEvent.updateMeal(ParsedMeal meal) = UpdateMealEvent;
   const factory MealLogEvent.saveMeal(ParsedMeal meal) = SaveMealEvent;
   const factory MealLogEvent.reset() = ResetEvent;
+  const factory MealLogEvent.fetchMealDetails(DateTime date, String mealId) = FetchMealDetailsEvent;
 }

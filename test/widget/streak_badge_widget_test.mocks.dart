@@ -86,6 +86,16 @@ class MockDashboardCubit extends _i1.Mock implements _i3.DashboardCubit {
       ) as _i4.Future<void>);
 
   @override
+  _i4.Future<void> addWater(int? mlToAdd) => (super.noSuchMethod(
+        Invocation.method(
+          #addWater,
+          [mlToAdd],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   void nextDay() => super.noSuchMethod(
         Invocation.method(
           #nextDay,

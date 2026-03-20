@@ -1,0 +1,9 @@
+{
+    "java.import.exclusions": [
+        "**/android/**",
+        "**/.android/**"
+    ],
+    "java.import.gradle.enabled": false,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.version": "8.14"
+}

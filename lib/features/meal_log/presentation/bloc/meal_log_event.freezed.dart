@@ -54,6 +54,7 @@ extension MealLogEventPatterns on MealLogEvent {
     TResult Function(UpdateMealEvent value)? updateMeal,
     TResult Function(SaveMealEvent value)? saveMeal,
     TResult Function(ResetEvent value)? reset,
+    TResult Function(FetchMealDetailsEvent value)? fetchMealDetails,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -66,6 +67,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that);
       case ResetEvent() when reset != null:
         return reset(_that);
+      case FetchMealDetailsEvent() when fetchMealDetails != null:
+        return fetchMealDetails(_that);
       case _:
         return orElse();
     }
@@ -90,6 +93,7 @@ extension MealLogEventPatterns on MealLogEvent {
     required TResult Function(UpdateMealEvent value) updateMeal,
     required TResult Function(SaveMealEvent value) saveMeal,
     required TResult Function(ResetEvent value) reset,
+    required TResult Function(FetchMealDetailsEvent value) fetchMealDetails,
   }) {
     final _that = this;
     switch (_that) {
@@ -101,6 +105,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that);
       case ResetEvent():
         return reset(_that);
+      case FetchMealDetailsEvent():
+        return fetchMealDetails(_that);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -124,6 +130,7 @@ extension MealLogEventPatterns on MealLogEvent {
     TResult? Function(UpdateMealEvent value)? updateMeal,
     TResult? Function(SaveMealEvent value)? saveMeal,
     TResult? Function(ResetEvent value)? reset,
+    TResult? Function(FetchMealDetailsEvent value)? fetchMealDetails,
   }) {
     final _that = this;
     switch (_that) {
@@ -135,6 +142,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that);
       case ResetEvent() when reset != null:
         return reset(_that);
+      case FetchMealDetailsEvent() when fetchMealDetails != null:
+        return fetchMealDetails(_that);
       case _:
         return null;
     }
@@ -158,6 +167,7 @@ extension MealLogEventPatterns on MealLogEvent {
     TResult Function(ParsedMeal meal)? updateMeal,
     TResult Function(ParsedMeal meal)? saveMeal,
     TResult Function()? reset,
+    TResult Function(DateTime date, String mealId)? fetchMealDetails,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -170,6 +180,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that.meal);
       case ResetEvent() when reset != null:
         return reset();
+      case FetchMealDetailsEvent() when fetchMealDetails != null:
+        return fetchMealDetails(_that.date, _that.mealId);
       case _:
         return orElse();
     }
@@ -194,6 +206,7 @@ extension MealLogEventPatterns on MealLogEvent {
     required TResult Function(ParsedMeal meal) updateMeal,
     required TResult Function(ParsedMeal meal) saveMeal,
     required TResult Function() reset,
+    required TResult Function(DateTime date, String mealId) fetchMealDetails,
   }) {
     final _that = this;
     switch (_that) {
@@ -205,6 +218,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that.meal);
       case ResetEvent():
         return reset();
+      case FetchMealDetailsEvent():
+        return fetchMealDetails(_that.date, _that.mealId);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -228,6 +243,7 @@ extension MealLogEventPatterns on MealLogEvent {
     TResult? Function(ParsedMeal meal)? updateMeal,
     TResult? Function(ParsedMeal meal)? saveMeal,
     TResult? Function()? reset,
+    TResult? Function(DateTime date, String mealId)? fetchMealDetails,
   }) {
     final _that = this;
     switch (_that) {
@@ -239,6 +255,8 @@ extension MealLogEventPatterns on MealLogEvent {
         return saveMeal(_that.meal);
       case ResetEvent() when reset != null:
         return reset();
+      case FetchMealDetailsEvent() when fetchMealDetails != null:
+        return fetchMealDetails(_that.date, _that.mealId);
       case _:
         return null;
     }
@@ -462,6 +480,78 @@ class ResetEvent implements MealLogEvent {
   @override
   String toString() {
     return 'MealLogEvent.reset()';
+  }
+}
+
+/// @nodoc
+
+class FetchMealDetailsEvent implements MealLogEvent {
+  const FetchMealDetailsEvent(this.date, this.mealId);
+
+  final DateTime date;
+  final String mealId;
+
+  /// Create a copy of MealLogEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $FetchMealDetailsEventCopyWith<FetchMealDetailsEvent> get copyWith =>
+      _$FetchMealDetailsEventCopyWithImpl<FetchMealDetailsEvent>(
+          this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is FetchMealDetailsEvent &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.mealId, mealId) || other.mealId == mealId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, date, mealId);
+
+  @override
+  String toString() {
+    return 'MealLogEvent.fetchMealDetails(date: $date, mealId: $mealId)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $FetchMealDetailsEventCopyWith<$Res>
+    implements $MealLogEventCopyWith<$Res> {
+  factory $FetchMealDetailsEventCopyWith(FetchMealDetailsEvent value,
+          $Res Function(FetchMealDetailsEvent) _then) =
+      _$FetchMealDetailsEventCopyWithImpl;
+  @useResult
+  $Res call({DateTime date, String mealId});
+}
+
+/// @nodoc
+class _$FetchMealDetailsEventCopyWithImpl<$Res>
+    implements $FetchMealDetailsEventCopyWith<$Res> {
+  _$FetchMealDetailsEventCopyWithImpl(this._self, this._then);
+
+  final FetchMealDetailsEvent _self;
+  final $Res Function(FetchMealDetailsEvent) _then;
+
+  /// Create a copy of MealLogEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? date = null,
+    Object? mealId = null,
+  }) {
+    return _then(FetchMealDetailsEvent(
+      null == date
+          ? _self.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      null == mealId
+          ? _self.mealId
+          : mealId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 

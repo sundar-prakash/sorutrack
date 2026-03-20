@@ -135,7 +135,7 @@ class ReportsCubit extends Cubit<ReportsState> {
       );
       emit(currentState.copyWith(insights: insights));
     } catch (e) {
-      // Don't emit error state, just don't update insights
+      emit(currentState.copyWith(insights: "System Error: ${e.toString()}"));
     }
   }
 }

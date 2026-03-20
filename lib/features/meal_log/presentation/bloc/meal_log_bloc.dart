@@ -13,6 +13,22 @@ class MealLogBloc extends Bloc<MealLogEvent, MealLogState> {
     on<UpdateMealEvent>(_onUpdateMeal);
     on<SaveMealEvent>(_onSaveMeal);
     on<ResetEvent>(_onReset);
+    on<FetchMealDetailsEvent>(_onFetchMealDetails);
+  }
+
+  Future<void> _onFetchMealDetails(FetchMealDetailsEvent event, Emitter<MealLogState> emit) async {
+    emit(const MealLogState.analyzing()); // Reuse analyzing state as loading
+    final result = await _repository.getMealsForDate(event.date);
+    result.fold(
+      (failure) => emit(MealLogState.error(failure.message)),
+      (meals) {
+        final meal = meals.firstWhere(
+          (m) => m.mealId == event.mealId, 
+          orElse: () => throw Exception('Meal not found'),
+        );
+        emit(MealLogState.reviewing(meal));
+      },
+    );
   }
 
   Future<void> _onParseMeal(ParseMealEvent event, Emitter<MealLogState> emit) async {

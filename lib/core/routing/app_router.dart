@@ -22,14 +22,29 @@ import '../../features/meal_log/presentation/bloc/meal_log_bloc.dart';
 import '../../features/reports/presentation/bloc/reports_cubit.dart';
 import '../../features/reports/presentation/bloc/report_filter_cubit.dart';
 import '../../features/data_management/presentation/bloc/data_management_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+// Cached prefs instance to avoid async in redirect
+SharedPreferences? _cachedPrefs;
+
+Future<void> initRouterPrefs() async {
+  _cachedPrefs = await SharedPreferences.getInstance();
+}
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/onboarding',
+    redirect: (context, state) {
+      final isOnboarded = _cachedPrefs?.getBool('isOnboarded') ?? false;
+      final goingToOnboarding = state.matchedLocation == '/onboarding';
+      // Already onboarded → skip straight to dashboard
+      if (isOnboarded && goingToOnboarding) return '/dashboard';
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/onboarding',
@@ -87,7 +102,10 @@ class AppRouter {
             pageBuilder: (context, state) => _buildPageWithTransition(
               context: context,
               state: state,
-              child: const SettingsScreen(),
+              child: BlocProvider(
+                create: (_) => getIt<DataManagementBloc>(),
+                child: const SettingsScreen(),
+              ),
             ),
           ),
         ],
@@ -110,10 +128,13 @@ class AppRouter {
       GoRoute(
         path: '/quick-add',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => BlocProvider(
-          create: (_) => getIt<MealLogBloc>(),
-          child: const QuickAddScreen(),
-        ),
+        builder: (context, state) {
+          final mealType = state.extra as String?;
+          return BlocProvider(
+            create: (_) => getIt<MealLogBloc>(),
+            child: QuickAddScreen(initialMealType: mealType),
+          );
+        },
       ),
       GoRoute(
         path: '/data-management',

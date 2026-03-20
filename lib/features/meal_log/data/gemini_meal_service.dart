@@ -75,7 +75,7 @@ Return this EXACT JSON structure:
 
     try {
       final model = GenerativeModel(
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.0-flash',
         apiKey: apiKey,
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',

@@ -30,12 +30,12 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
     if (query.isEmpty) {
       sql = 'SELECT * FROM food_items WHERE deleted_at IS NULL';
     } else {
-      // FTS5 Search
+      // FTS Search with renamed table to avoid poisoning
       sql = '''
         SELECT fi.*
         FROM food_items fi
-        JOIN foods_fts fts ON fi.id = fts.rowid
-        WHERE foods_fts MATCH ? AND fi.deleted_at IS NULL
+        JOIN food_items_fts fts ON fi.id = fts.food_id
+        WHERE food_items_fts MATCH ? AND fi.deleted_at IS NULL
       ''';
       args.add('$query*');
     }

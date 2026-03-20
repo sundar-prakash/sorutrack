@@ -194,9 +194,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: Text(u.name.toUpperCase()),
                               );
                             }).toList(),
-                            onChanged: (val) {
-                              if (val != null) setState(() => _heightUnit = val);
-                            },
+                            onChanged: null, // (val) {
+                            //   if (val != null) setState(() => _heightUnit = val);
+                            // },
                           ),
                         ),
                       ],
@@ -229,9 +229,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: Text(u.name.toUpperCase()),
                               );
                             }).toList(),
-                            onChanged: (val) {
-                              if (val != null) setState(() => _weightUnit = val);
-                            },
+                            onChanged: null, // (val) {
+                            //   if (val != null) setState(() => _weightUnit = val);
+                            // },
                           ),
                         ),
                       ],
