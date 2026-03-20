@@ -21,3 +21,6 @@
 
 # Google Generative AI (Gemini)
 -keep class com.google.ai.client.generativeai.** { *; }
+
+# Play Core (Suppressed as project does not use deferred components)
+-dontwarn com.google.android.play.core.**

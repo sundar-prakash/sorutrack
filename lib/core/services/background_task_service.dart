@@ -75,7 +75,7 @@ class BackgroundTaskService {
       frequency: const Duration(hours: 2), // Check every 2 hours
       inputData: {'userId': userId},
       constraints: Constraints(
-        networkType: NetworkType.not_required,
+        networkType: NetworkType.notRequired,
       ),
     );
   }
@@ -87,7 +87,7 @@ class BackgroundTaskService {
       autoBackupTask,
       frequency: frequency,
       constraints: Constraints(
-        networkType: NetworkType.not_required,
+        networkType: NetworkType.notRequired,
         requiresBatteryNotLow: true,
         requiresStorageNotLow: true,
       ),
