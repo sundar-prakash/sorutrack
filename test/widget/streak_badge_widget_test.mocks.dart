@@ -29,13 +29,8 @@ import 'package:sorutrack_pro/features/dashboard/presentation/cubit/dashboard_st
 
 class _FakeDashboardState_0 extends _i1.SmartFake
     implements _i2.DashboardState {
-  _FakeDashboardState_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeDashboardState_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [DashboardCubit].
@@ -47,129 +42,89 @@ class MockDashboardCubit extends _i1.Mock implements _i3.DashboardCubit {
   }
 
   @override
-  _i2.DashboardState get state => (super.noSuchMethod(
-        Invocation.getter(#state),
-        returnValue: _FakeDashboardState_0(
-          this,
-          Invocation.getter(#state),
-        ),
-      ) as _i2.DashboardState);
-
-  @override
-  _i4.Stream<_i2.DashboardState> get stream => (super.noSuchMethod(
-        Invocation.getter(#stream),
-        returnValue: _i4.Stream<_i2.DashboardState>.empty(),
-      ) as _i4.Stream<_i2.DashboardState>);
-
-  @override
-  bool get isClosed => (super.noSuchMethod(
-        Invocation.getter(#isClosed),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  _i4.Future<void> loadDashboard({
-    DateTime? date,
-    bool? isRefresh = false,
-  }) =>
+  _i2.DashboardState get state =>
       (super.noSuchMethod(
-        Invocation.method(
-          #loadDashboard,
-          [],
-          {
-            #date: date,
-            #isRefresh: isRefresh,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.getter(#state),
+            returnValue: _FakeDashboardState_0(this, Invocation.getter(#state)),
+          )
+          as _i2.DashboardState);
 
   @override
-  _i4.Future<void> addWater(int? mlToAdd) => (super.noSuchMethod(
-        Invocation.method(
-          #addWater,
-          [mlToAdd],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+  _i4.Stream<_i2.DashboardState> get stream =>
+      (super.noSuchMethod(
+            Invocation.getter(#stream),
+            returnValue: _i4.Stream<_i2.DashboardState>.empty(),
+          )
+          as _i4.Stream<_i2.DashboardState>);
+
+  @override
+  bool get isClosed =>
+      (super.noSuchMethod(Invocation.getter(#isClosed), returnValue: false)
+          as bool);
+
+  @override
+  _i4.Future<void> loadDashboard({DateTime? date, bool? isRefresh = false}) =>
+      (super.noSuchMethod(
+            Invocation.method(#loadDashboard, [], {
+              #date: date,
+              #isRefresh: isRefresh,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> addWater(int? mlToAdd) =>
+      (super.noSuchMethod(
+            Invocation.method(#addWater, [mlToAdd]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   void nextDay() => super.noSuchMethod(
-        Invocation.method(
-          #nextDay,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#nextDay, []),
+    returnValueForMissingStub: null,
+  );
 
   @override
   void previousDay() => super.noSuchMethod(
-        Invocation.method(
-          #previousDay,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#previousDay, []),
+    returnValueForMissingStub: null,
+  );
 
   @override
   void emit(_i2.DashboardState? state) => super.noSuchMethod(
-        Invocation.method(
-          #emit,
-          [state],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#emit, [state]),
+    returnValueForMissingStub: null,
+  );
 
   @override
   void onChange(_i5.Change<_i2.DashboardState>? change) => super.noSuchMethod(
-        Invocation.method(
-          #onChange,
-          [change],
-        ),
-        returnValueForMissingStub: null,
-      );
+    Invocation.method(#onChange, [change]),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  void addError(
-    Object? error, [
-    StackTrace? stackTrace,
-  ]) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #addError,
-          [
-            error,
-            stackTrace,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
+  void addError(Object? error, [StackTrace? stackTrace]) => super.noSuchMethod(
+    Invocation.method(#addError, [error, stackTrace]),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  void onError(
-    Object? error,
-    StackTrace? stackTrace,
-  ) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #onError,
-          [
-            error,
-            stackTrace,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
+  void onError(Object? error, StackTrace? stackTrace) => super.noSuchMethod(
+    Invocation.method(#onError, [error, stackTrace]),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  _i4.Future<void> close() => (super.noSuchMethod(
-        Invocation.method(
-          #close,
-          [],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+  _i4.Future<void> close() =>
+      (super.noSuchMethod(
+            Invocation.method(#close, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

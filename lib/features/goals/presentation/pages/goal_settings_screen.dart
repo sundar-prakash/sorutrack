@@ -28,7 +28,7 @@ class _GoalSettingsScreenState extends State<GoalSettingsScreen> {
     if (!_isInit) {
       final state = context.read<ProfileCubit>().state;
       state.maybeWhen(
-        loaded: (profile, _, __, ___, ____, _____, ______) {
+        loaded: (profile, _, _, _, _, _, _) {
           _targetWeightController = TextEditingController(text: profile.targetWeight.toString());
           _weeklyGoalController = TextEditingController(text: profile.weeklyGoal.toString());
           _goalType = profile.goal;
@@ -54,7 +54,7 @@ class _GoalSettingsScreenState extends State<GoalSettingsScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       final state = context.read<ProfileCubit>().state;
       state.maybeWhen(
-        loaded: (profile, _, __, ___, ____, _____, ______) {
+        loaded: (profile, _, _, _, _, _, _) {
           final target = double.parse(_targetWeightController.text.trim());
           final current = profile.weight;
           

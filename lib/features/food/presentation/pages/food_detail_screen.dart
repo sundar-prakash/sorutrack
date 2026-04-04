@@ -52,7 +52,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, profileState) {
           final useMetric = profileState.maybeWhen(
-            loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+            loaded: (p, _, _, _, _, _, _) => p.weightUnit == WeightUnit.kg,
             orElse: () => true,
           );
           final unitHelper = UnitHelper(useMetric: useMetric);

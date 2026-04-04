@@ -5,6 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/widgets/header_section.dart';
 import 'package:sorutrack_pro/features/dashboard/presentation/cubit/dashboard_cubit.dart';
+import 'package:sorutrack_pro/features/dashboard/presentation/cubit/dashboard_state.dart';
 
 import 'streak_badge_widget_test.mocks.dart';
 
@@ -14,6 +15,10 @@ void main() {
 
   setUp(() {
     mockDashboardCubit = MockDashboardCubit();
+    // Stub the stream and state
+    when(mockDashboardCubit.stream).thenAnswer((_) => const Stream.empty());
+    when(mockDashboardCubit.state).thenReturn(const DashboardState.initial());
+    
     // Stub methods that return void
     when(mockDashboardCubit.previousDay()).thenReturn(null);
     when(mockDashboardCubit.nextDay()).thenReturn(null);

@@ -11,10 +11,11 @@ class InvalidApiKeyException implements Exception {
 
 @lazySingleton
 class GeminiKeyService {
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
+  final FlutterSecureStorage _storage;
+  final Dio _dio;
+
+  GeminiKeyService(this._storage, this._dio);
+
   static const _keyName = 'gemini_api_key';
 
   Future<void> saveKey(String apiKey) async {
@@ -41,7 +42,7 @@ class GeminiKeyService {
   Future<ApiKeyValidationResult> validateKey(String apiKey) async {
     try {
       // Make a minimal test call to Gemini
-      final response = await Dio().post(
+      final response = await _dio.post(
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent',
         data: {
           "contents": [

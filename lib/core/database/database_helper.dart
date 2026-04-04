@@ -166,7 +166,7 @@ class DatabaseHelper {
 
     // Users Table
     await db.execute('''
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT UNIQUE,
@@ -200,7 +200,7 @@ class DatabaseHelper {
 
     // User Goals Table
     await db.execute('''
-      CREATE TABLE user_goals (
+      CREATE TABLE IF NOT EXISTS user_goals (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         goal_type TEXT NOT NULL, -- calories, protein, etc.
@@ -217,7 +217,7 @@ class DatabaseHelper {
 
     // Food Items Table (General Library)
     await db.execute('''
-      CREATE TABLE food_items (
+      CREATE TABLE IF NOT EXISTS food_items (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         brand TEXT,
@@ -245,7 +245,7 @@ class DatabaseHelper {
 
     // Food Cache (For Gemini results)
     await db.execute('''
-      CREATE TABLE food_cache (
+      CREATE TABLE IF NOT EXISTS food_cache (
         id TEXT PRIMARY KEY,
         input_text TEXT UNIQUE,
         parsed_json TEXT NOT NULL,
@@ -257,7 +257,7 @@ class DatabaseHelper {
 
     // API Usage tracking
     await db.execute('''
-      CREATE TABLE api_usage (
+      CREATE TABLE IF NOT EXISTS api_usage (
         date TEXT PRIMARY KEY, -- YYYY-MM-DD
         call_count INTEGER DEFAULT 0,
         token_estimate INTEGER DEFAULT 0,
@@ -267,7 +267,7 @@ class DatabaseHelper {
 
     // Meals Table
     await db.execute('''
-      CREATE TABLE meals (
+      CREATE TABLE IF NOT EXISTS meals (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         name TEXT NOT NULL, -- Breakfast, Lunch, etc.
@@ -281,7 +281,7 @@ class DatabaseHelper {
 
     // Meal Items Table
     await db.execute('''
-      CREATE TABLE meal_items (
+      CREATE TABLE IF NOT EXISTS meal_items (
         id TEXT PRIMARY KEY,
         meal_id TEXT NOT NULL,
         food_item_id TEXT NOT NULL,
@@ -309,7 +309,7 @@ class DatabaseHelper {
 
     // Daily Logs
     await db.execute('''
-      CREATE TABLE daily_logs (
+      CREATE TABLE IF NOT EXISTS daily_logs (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         date TEXT NOT NULL, -- YYYY-MM-DD
@@ -333,7 +333,7 @@ class DatabaseHelper {
 
     // Water Logs
     await db.execute('''
-      CREATE TABLE water_logs (
+      CREATE TABLE IF NOT EXISTS water_logs (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         amount REAL NOT NULL,
@@ -346,7 +346,7 @@ class DatabaseHelper {
 
     // Weight Logs
     await db.execute('''
-      CREATE TABLE weight_logs (
+      CREATE TABLE IF NOT EXISTS weight_logs (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         weight REAL NOT NULL,
@@ -359,7 +359,7 @@ class DatabaseHelper {
 
     // Exercise Logs
     await db.execute('''
-      CREATE TABLE exercise_logs (
+      CREATE TABLE IF NOT EXISTS exercise_logs (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -375,7 +375,7 @@ class DatabaseHelper {
 
     // Gamification Data
     await db.execute('''
-      CREATE TABLE gamification_data (
+      CREATE TABLE IF NOT EXISTS gamification_data (
         user_id TEXT PRIMARY KEY,
         xp INTEGER DEFAULT 0,
         level INTEGER DEFAULT 1,
@@ -391,7 +391,7 @@ class DatabaseHelper {
 
     // XP History
     await db.execute('''
-      CREATE TABLE xp_history (
+      CREATE TABLE IF NOT EXISTS xp_history (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         amount INTEGER NOT NULL,
@@ -403,7 +403,7 @@ class DatabaseHelper {
 
     // Challenges
     await db.execute('''
-      CREATE TABLE challenges (
+      CREATE TABLE IF NOT EXISTS challenges (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT,
@@ -417,7 +417,7 @@ class DatabaseHelper {
 
     // User Challenges
     await db.execute('''
-      CREATE TABLE user_challenges (
+      CREATE TABLE IF NOT EXISTS user_challenges (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         challenge_id TEXT NOT NULL,
@@ -432,7 +432,7 @@ class DatabaseHelper {
 
     // Badges
     await db.execute('''
-      CREATE TABLE badges (
+      CREATE TABLE IF NOT EXISTS badges (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
@@ -445,7 +445,7 @@ class DatabaseHelper {
 
     // Achievements (User-Badge mapping)
     await db.execute('''
-      CREATE TABLE achievements (
+      CREATE TABLE IF NOT EXISTS achievements (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         badge_id TEXT NOT NULL,
@@ -457,7 +457,7 @@ class DatabaseHelper {
 
     // Notifications Schedule
     await db.execute('''
-      CREATE TABLE notifications_schedule (
+      CREATE TABLE IF NOT EXISTS notifications_schedule (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         title TEXT NOT NULL,
@@ -475,7 +475,7 @@ class DatabaseHelper {
 
     // App Settings
     await db.execute('''
-      CREATE TABLE app_settings (
+      CREATE TABLE IF NOT EXISTS app_settings (
         user_id TEXT PRIMARY KEY,
         theme_mode TEXT DEFAULT 'system',
         language TEXT DEFAULT 'en',
@@ -490,7 +490,7 @@ class DatabaseHelper {
 
     // Notification Settings
     await db.execute('''
-      CREATE TABLE notification_settings (
+      CREATE TABLE IF NOT EXISTS notification_settings (
         user_id TEXT PRIMARY KEY,
         master_enabled INTEGER DEFAULT 1,
         meal_reminders_enabled INTEGER DEFAULT 1,
@@ -514,7 +514,7 @@ class DatabaseHelper {
     // Foods FTS Table with robust detection and different name to avoid poisoned table state
     bool fts5Supported = false;
     try {
-      await db.execute('CREATE VIRTUAL TABLE fts5_test USING fts5(dummy)');
+      await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS fts5_test USING fts5(dummy)');
       await db.execute('DROP TABLE fts5_test');
       fts5Supported = true;
     } catch (_) {}
@@ -525,7 +525,7 @@ class DatabaseHelper {
     } else {
       bool fts4Supported = false;
       try {
-        await db.execute('CREATE VIRTUAL TABLE fts4_test USING fts4(dummy)');
+        await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS fts4_test USING fts4(dummy)');
         await db.execute('DROP TABLE fts4_test');
         fts4Supported = true;
       } catch (_) {}
@@ -540,26 +540,26 @@ class DatabaseHelper {
 
     // Foods FTS Triggers
     await db.execute('''
-      CREATE TRIGGER food_items_ai AFTER INSERT ON food_items BEGIN
+      CREATE TRIGGER IF NOT EXISTS food_items_ai AFTER INSERT ON food_items BEGIN
         INSERT INTO food_items_fts(food_id, name, brand, category) VALUES (new.id, new.name, new.brand, new.category);
       END;
     ''');
     await db.execute('''
-      CREATE TRIGGER food_items_ad AFTER DELETE ON food_items BEGIN
+      CREATE TRIGGER IF NOT EXISTS food_items_ad AFTER DELETE ON food_items BEGIN
         DELETE FROM food_items_fts WHERE food_id = old.id;
       END;
     ''');
     await db.execute('''
-      CREATE TRIGGER food_items_au AFTER UPDATE ON food_items BEGIN
+      CREATE TRIGGER IF NOT EXISTS food_items_au AFTER UPDATE ON food_items BEGIN
         UPDATE food_items_fts SET name = new.name, brand = new.brand, category = new.category WHERE food_id = old.id;
       END;
     ''');
 
     // Indexes
-    await db.execute('CREATE INDEX idx_meals_user_id ON meals(user_id)');
-    await db.execute('CREATE INDEX idx_meal_items_meal_id ON meal_items(meal_id)');
-    await db.execute('CREATE INDEX idx_daily_logs_user_date ON daily_logs(user_id, date)');
-    await db.execute('CREATE INDEX idx_food_items_name ON food_items(name)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_meals_user_id ON meals(user_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_meal_items_meal_id ON meal_items(meal_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_daily_logs_user_date ON daily_logs(user_id, date)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_food_items_name ON food_items(name)');
     
     _logger.i('Tables created successfully.');
   }

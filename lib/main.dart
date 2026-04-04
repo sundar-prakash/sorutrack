@@ -41,12 +41,16 @@ void main() async {
   FlutterError.onError = (details) {
     logger.e('Flutter Error', error: details.exception, stackTrace: details.stack);
   };
-  // Setup HydratedBloc Storage
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorageDirectory.web
-        : HydratedStorageDirectory((await getApplicationDocumentsDirectory()).path),
-  );
+  // Setup HydratedBloc Storage (only if not already set by a test)
+  try {
+    HydratedBloc.storage;
+  } catch (_) {
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: kIsWeb
+          ? HydratedStorageDirectory.web
+          : HydratedStorageDirectory((await getApplicationDocumentsDirectory()).path),
+    );
+  }
 
   runApp(const SoruTrackProApp());
 }

@@ -1,15 +1,17 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 @lazySingleton
 class NotificationService {
-  final FlutterLocalNotificationsPlugin _notifications =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications;
+
+  NotificationService(this._notifications);
 
   Future<void> init() async {
-    if (kIsWeb) return;
+    if (kIsWeb || (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST'))) return;
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
@@ -67,7 +69,7 @@ class NotificationService {
   }
 
   Future<void> requestPermissions() async {
-    if (kIsWeb) return;
+    if (kIsWeb || (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST'))) return;
     
     final androidPlugin = _notifications
         .resolvePlatformSpecificImplementation<

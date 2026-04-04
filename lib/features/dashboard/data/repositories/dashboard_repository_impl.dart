@@ -21,7 +21,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       
       // 1. Get User Profile for targets
       final userResult = await _userRepository.getUserProfile(userId);
-      return userResult.fold(
+      return await userResult.fold(
         (failure) => Left(failure),
         (profile) async {
           // 2. Calculate Targets

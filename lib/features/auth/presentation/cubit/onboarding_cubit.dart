@@ -39,6 +39,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     const minWeight = 20.0;
     if (validatedWeight < minWeight) validatedWeight = minWeight;
     emit(state.copyWith(targetWeight: validatedWeight));
+    _enforceWeightConstraints();
   }
 
   void updateWeeklyGoal(double kgPerWeek) =>

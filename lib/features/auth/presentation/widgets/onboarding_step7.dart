@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:get_it/get_it.dart';
 import '../../../../core/services/gemini_key_service.dart';
 
 class OnboardingStep7 extends StatefulWidget {
@@ -19,7 +20,7 @@ class OnboardingStep7 extends StatefulWidget {
 
 class _OnboardingStep7State extends State<OnboardingStep7> {
   final _keyController = TextEditingController();
-  final _keyService = GeminiKeyService();
+  final _keyService = GetIt.I<GeminiKeyService>();
   bool _isValidating = false;
   ApiKeyValidationResult? _validationResult;
   bool _obscureText = true;

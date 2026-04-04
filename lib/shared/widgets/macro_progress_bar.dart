@@ -31,7 +31,7 @@ class MacroProgressBar extends StatelessWidget {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final useMetric = state.maybeWhen(
-          loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+          loaded: (p, _, _, _, _, _, _) => p.weightUnit == WeightUnit.kg,
           orElse: () => true,
         );
         final unitHelper = UnitHelper(useMetric: useMetric);

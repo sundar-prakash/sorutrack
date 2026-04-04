@@ -4,13 +4,15 @@ import 'package:injectable/injectable.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/services/gemini_key_service.dart';
+import '../../../core/services/gemini_client.dart';
 import '../domain/models/parsed_meal.dart';
 
 @injectable
 class GeminiMealService {
   final GeminiKeyService _keyService;
+  final GeminiClient _geminiClient;
 
-  GeminiMealService(this._keyService);
+  GeminiMealService(this._keyService, this._geminiClient);
 
   final String _systemPrompt = """
 You are a precise nutrition database assistant. Parse the user's meal description and return ONLY valid JSON with no markdown, no explanation, no extra text.
@@ -74,21 +76,18 @@ Return this EXACT JSON structure:
     }
 
     try {
-      final model = GenerativeModel(
-        model: 'gemini-2.0-flash',
+      final responseText = await _geminiClient.generateContent(
         apiKey: apiKey,
+        modelName: 'gemini-2.0-flash',
+        content: [
+          Content.text(_systemPrompt),
+          Content.text("User Input: $userInput\nMeal Type: $mealType"),
+        ],
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',
         ),
       );
-
-      final content = [
-        Content.text(_systemPrompt),
-        Content.text("User Input: $userInput\nMeal Type: $mealType"),
-      ];
-
-      final response = await model.generateContent(content);
-      final text = response.text;
+      final text = responseText;
 
       if (text == null || text.isEmpty) {
         return Left(ServerFailure('Empty response from Gemini'));

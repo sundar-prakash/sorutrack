@@ -223,7 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
               final useMetric = state.maybeWhen(
-                loaded: (p, _, __, ___, ____, _____, ______) => p.weightUnit == WeightUnit.kg,
+                loaded: (p, _, _, _, _, _, _) => p.weightUnit == WeightUnit.kg,
                 orElse: () => _useMetric, // Fallback to local if not loaded
               );
               

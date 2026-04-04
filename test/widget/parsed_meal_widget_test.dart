@@ -4,16 +4,19 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorutrack_pro/features/meal_log/presentation/bloc/meal_log_bloc.dart';
+import 'package:sorutrack_pro/features/auth/presentation/cubit/profile_cubit.dart';
 
 import 'package:sorutrack_pro/features/meal_log/presentation/bloc/meal_log_state.dart';
 import 'package:sorutrack_pro/features/meal_log/presentation/screens/parsed_results_screen.dart';
 import 'package:sorutrack_pro/features/meal_log/domain/models/parsed_meal.dart';
+import '../helpers/mock_hydrated_storage.dart';
 
 import 'parsed_meal_widget_test.mocks.dart';
 
-@GenerateMocks([MealLogBloc])
+@GenerateMocks([MealLogBloc, ProfileCubit])
 void main() {
   late MockMealLogBloc mockMealLogBloc;
+  late MockProfileCubit mockProfileCubit;
 
   final sampleMeal = ParsedMeal(
     mealName: 'Healthy Lunch',
@@ -64,15 +67,24 @@ void main() {
   );
 
   setUp(() {
+    mockHydratedStorage();
     mockMealLogBloc = MockMealLogBloc();
+    mockProfileCubit = MockProfileCubit();
+    
     when(mockMealLogBloc.state).thenReturn(const MealLogState.initial());
     when(mockMealLogBloc.stream).thenAnswer((_) => const Stream<MealLogState>.empty());
+    
+    when(mockProfileCubit.state).thenReturn(const ProfileState.initial());
+    when(mockProfileCubit.stream).thenAnswer((_) => const Stream<ProfileState>.empty());
   });
 
   Widget createWidgetUnderTest() {
     return MaterialApp(
-      home: BlocProvider<MealLogBloc>.value(
-        value: mockMealLogBloc,
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<MealLogBloc>.value(value: mockMealLogBloc),
+          BlocProvider<ProfileCubit>.value(value: mockProfileCubit),
+        ],
         child: ParsedResultsScreen(meal: sampleMeal),
       ),
     );
@@ -92,8 +104,8 @@ void main() {
 
     expect(find.text('Quinoa Salad'), findsOneWidget);
     expect(find.text('Guacamole'), findsOneWidget);
-    expect(find.text('350 cal'), findsOneWidget);
-    expect(find.text('100 cal'), findsOneWidget);
+    expect(find.text('350 kcal'), findsOneWidget);
+    expect(find.text('100 kcal'), findsOneWidget);
   });
 
   testWidgets('renders nutrition summary bar', (WidgetTester tester) async {

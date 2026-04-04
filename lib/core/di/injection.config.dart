@@ -10,6 +10,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:dio/dio.dart' as _i361;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as _i163;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
@@ -74,109 +77,162 @@ import '../../features/reports/domain/repositories/reports_repository.dart'
     as _i808;
 import '../../features/reports/presentation/bloc/reports_cubit.dart' as _i833;
 import '../database/database_helper.dart' as _i64;
+import '../services/gemini_client.dart' as _i1002;
 import '../services/gemini_key_service.dart' as _i171;
 import '../services/home_widget_service.dart' as _i299;
 import 'injection.dart' as _i464;
 
 extension GetItInjectableX on _i174.GetIt {
-// initializes the registration of main-scope dependencies inside of GetIt
+  // initializes the registration of main-scope dependencies inside of GetIt
   _i174.GetIt init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
   }) {
-    final gh = _i526.GetItHelper(
-      this,
-      environment,
-      environmentFilter,
-    );
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule();
     gh.lazySingleton<_i64.DatabaseHelper>(() => _i64.DatabaseHelper());
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
     gh.lazySingleton<_i974.Logger>(() => registerModule.logger);
-    gh.lazySingleton<_i171.GeminiKeyService>(() => _i171.GeminiKeyService());
+    gh.lazySingleton<_i558.FlutterSecureStorage>(() => registerModule.storage);
+    gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
+      () => registerModule.notifications,
+    );
     gh.lazySingleton<_i299.HomeWidgetService>(() => _i299.HomeWidgetService());
     gh.lazySingleton<_i95.BackupService>(() => _i95.BackupService());
-    gh.lazySingleton<_i860.NotificationService>(
-        () => _i860.NotificationService());
+    gh.lazySingleton<_i171.GeminiKeyService>(
+      () => _i171.GeminiKeyService(
+        gh<_i558.FlutterSecureStorage>(),
+        gh<_i361.Dio>(),
+      ),
+    );
+    gh.lazySingleton<_i1002.GeminiClient>(() => _i1002.GeminiClientImpl());
     gh.factory<_i549.GeminiMealService>(
-        () => _i549.GeminiMealService(gh<_i171.GeminiKeyService>()));
+      () => _i549.GeminiMealService(
+        gh<_i171.GeminiKeyService>(),
+        gh<_i1002.GeminiClient>(),
+      ),
+    );
     gh.factory<_i982.GeminiReportsService>(
-        () => _i982.GeminiReportsService(gh<_i171.GeminiKeyService>()));
+      () => _i982.GeminiReportsService(
+        gh<_i171.GeminiKeyService>(),
+        gh<_i1002.GeminiClient>(),
+      ),
+    );
     gh.lazySingleton<_i81.FoodRemoteDataSource>(
-        () => _i81.FoodRemoteDataSourceImpl(gh<_i361.Dio>()));
+      () => _i81.FoodRemoteDataSourceImpl(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i367.ExportService>(
-        () => _i367.ExportService(gh<_i64.DatabaseHelper>()));
+      () => _i367.ExportService(gh<_i64.DatabaseHelper>()),
+    );
     gh.lazySingleton<_i113.ImportService>(
-        () => _i113.ImportService(gh<_i64.DatabaseHelper>()));
+      () => _i113.ImportService(gh<_i64.DatabaseHelper>()),
+    );
     gh.lazySingleton<_i97.GamificationRepository>(
-        () => _i358.GamificationRepositoryImpl(gh<_i64.DatabaseHelper>()));
+      () => _i358.GamificationRepositoryImpl(gh<_i64.DatabaseHelper>()),
+    );
     gh.lazySingleton<_i808.ReportsRepository>(
-        () => _i227.ReportsRepositoryImpl(gh<_i64.DatabaseHelper>()));
+      () => _i227.ReportsRepositoryImpl(gh<_i64.DatabaseHelper>()),
+    );
+    gh.lazySingleton<_i860.NotificationService>(
+      () => _i860.NotificationService(
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
+      ),
+    );
     gh.lazySingleton<_i926.UserRepository>(
-        () => _i687.UserRepositoryImpl(gh<_i64.DatabaseHelper>()));
+      () => _i687.UserRepositoryImpl(gh<_i64.DatabaseHelper>()),
+    );
     gh.lazySingleton<_i665.DashboardRepository>(
-        () => _i509.DashboardRepositoryImpl(
-              gh<_i64.DatabaseHelper>(),
-              gh<_i926.UserRepository>(),
-            ));
+      () => _i509.DashboardRepositoryImpl(
+        gh<_i64.DatabaseHelper>(),
+        gh<_i926.UserRepository>(),
+      ),
+    );
     gh.lazySingleton<_i367.NotificationRepository>(
-        () => _i367.NotificationRepositoryImpl(gh<_i64.DatabaseHelper>()));
+      () => _i367.NotificationRepositoryImpl(gh<_i64.DatabaseHelper>()),
+    );
     gh.lazySingleton<_i3.GamificationService>(
-        () => _i3.GamificationService(gh<_i97.GamificationRepository>()));
+      () => _i3.GamificationService(gh<_i97.GamificationRepository>()),
+    );
     gh.factory<_i638.GamificationBloc>(
-        () => _i638.GamificationBloc(gh<_i97.GamificationRepository>()));
+      () => _i638.GamificationBloc(gh<_i97.GamificationRepository>()),
+    );
     gh.lazySingleton<_i1004.FoodLocalDataSource>(
-        () => _i1004.FoodLocalDataSourceImpl(gh<_i64.DatabaseHelper>()));
-    gh.factory<_i833.ReportsCubit>(() => _i833.ReportsCubit(
-          gh<_i808.ReportsRepository>(),
-          gh<_i982.GeminiReportsService>(),
-        ));
-    gh.factory<_i24.DashboardCubit>(() => _i24.DashboardCubit(
-          gh<_i665.DashboardRepository>(),
-          gh<_i299.HomeWidgetService>(),
-        ));
-    gh.factory<_i70.DataManagementBloc>(() => _i70.DataManagementBloc(
-          gh<_i367.ExportService>(),
-          gh<_i113.ImportService>(),
-          gh<_i95.BackupService>(),
-        ));
-    gh.lazySingleton<_i780.FoodRepository>(() => _i860.FoodRepositoryImpl(
-          gh<_i1004.FoodLocalDataSource>(),
-          gh<_i81.FoodRemoteDataSource>(),
-        ));
-    gh.lazySingleton<_i118.MealRepository>(() => _i115.MealRepositoryImpl(
-          gh<_i64.DatabaseHelper>(),
-          gh<_i549.GeminiMealService>(),
-          gh<_i3.GamificationService>(),
-        ));
+      () => _i1004.FoodLocalDataSourceImpl(gh<_i64.DatabaseHelper>()),
+    );
+    gh.factory<_i833.ReportsCubit>(
+      () => _i833.ReportsCubit(
+        gh<_i808.ReportsRepository>(),
+        gh<_i982.GeminiReportsService>(),
+      ),
+    );
+    gh.factory<_i24.DashboardCubit>(
+      () => _i24.DashboardCubit(
+        gh<_i665.DashboardRepository>(),
+        gh<_i299.HomeWidgetService>(),
+      ),
+    );
+    gh.factory<_i70.DataManagementBloc>(
+      () => _i70.DataManagementBloc(
+        gh<_i367.ExportService>(),
+        gh<_i113.ImportService>(),
+        gh<_i95.BackupService>(),
+      ),
+    );
+    gh.lazySingleton<_i780.FoodRepository>(
+      () => _i860.FoodRepositoryImpl(
+        gh<_i1004.FoodLocalDataSource>(),
+        gh<_i81.FoodRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i118.MealRepository>(
+      () => _i115.MealRepositoryImpl(
+        gh<_i64.DatabaseHelper>(),
+        gh<_i549.GeminiMealService>(),
+        gh<_i3.GamificationService>(),
+      ),
+    );
     gh.lazySingleton<_i200.SaveUserProfile>(
-        () => _i200.SaveUserProfile(gh<_i926.UserRepository>()));
+      () => _i200.SaveUserProfile(gh<_i926.UserRepository>()),
+    );
     gh.lazySingleton<_i200.GetUserProfile>(
-        () => _i200.GetUserProfile(gh<_i926.UserRepository>()));
+      () => _i200.GetUserProfile(gh<_i926.UserRepository>()),
+    );
     gh.lazySingleton<_i200.CheckOnboardingStatus>(
-        () => _i200.CheckOnboardingStatus(gh<_i926.UserRepository>()));
+      () => _i200.CheckOnboardingStatus(gh<_i926.UserRepository>()),
+    );
     gh.lazySingleton<_i200.UpdateUserGoals>(
-        () => _i200.UpdateUserGoals(gh<_i926.UserRepository>()));
-    gh.lazySingleton<_i490.NotificationManager>(() => _i490.NotificationManager(
-          gh<_i860.NotificationService>(),
-          gh<_i367.NotificationRepository>(),
-        ));
-    gh.factory<_i421.ProfileCubit>(() => _i421.ProfileCubit(
-          gh<_i200.GetUserProfile>(),
-          gh<_i200.SaveUserProfile>(),
-        ));
+      () => _i200.UpdateUserGoals(gh<_i926.UserRepository>()),
+    );
+    gh.lazySingleton<_i490.NotificationManager>(
+      () => _i490.NotificationManager(
+        gh<_i860.NotificationService>(),
+        gh<_i367.NotificationRepository>(),
+      ),
+    );
+    gh.factory<_i421.ProfileCubit>(
+      () => _i421.ProfileCubit(
+        gh<_i200.GetUserProfile>(),
+        gh<_i200.SaveUserProfile>(),
+      ),
+    );
     gh.factory<_i996.BarcodeScannerBloc>(
-        () => _i996.BarcodeScannerBloc(gh<_i780.FoodRepository>()));
+      () => _i996.BarcodeScannerBloc(gh<_i780.FoodRepository>()),
+    );
     gh.factory<_i214.FoodSearchBloc>(
-        () => _i214.FoodSearchBloc(gh<_i780.FoodRepository>()));
+      () => _i214.FoodSearchBloc(gh<_i780.FoodRepository>()),
+    );
     gh.factory<_i27.RecipeBuilderBloc>(
-        () => _i27.RecipeBuilderBloc(gh<_i780.FoodRepository>()));
+      () => _i27.RecipeBuilderBloc(gh<_i780.FoodRepository>()),
+    );
     gh.factory<_i149.MealLogBloc>(
-        () => _i149.MealLogBloc(gh<_i118.MealRepository>()));
-    gh.factory<_i348.OnboardingCubit>(() => _i348.OnboardingCubit(
-          gh<_i200.SaveUserProfile>(),
-          gh<_i171.GeminiKeyService>(),
-        ));
+      () => _i149.MealLogBloc(gh<_i118.MealRepository>()),
+    );
+    gh.factory<_i348.OnboardingCubit>(
+      () => _i348.OnboardingCubit(
+        gh<_i200.SaveUserProfile>(),
+        gh<_i171.GeminiKeyService>(),
+      ),
+    );
     return this;
   }
 }

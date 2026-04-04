@@ -81,6 +81,39 @@ class ParsedMeal extends Equatable {
         'warnings': warnings,
         'alternatives_suggested': alternativesSuggested,
       };
+
+  ParsedMeal copyWith({
+    String? mealId,
+    String? mealName,
+    String? mealTime,
+    String? mealType,
+    double? confidenceScore,
+    double? totalCalories,
+    double? totalProteinG,
+    double? totalCarbsG,
+    double? totalFatG,
+    double? totalFiberG,
+    List<ParsedMealItem>? items,
+    List<String>? warnings,
+    List<String>? alternativesSuggested,
+  }) {
+    return ParsedMeal(
+      mealId: mealId ?? this.mealId,
+      mealName: mealName ?? this.mealName,
+      mealTime: mealTime ?? this.mealTime,
+      mealType: mealType ?? this.mealType,
+      confidenceScore: confidenceScore ?? this.confidenceScore,
+      totalCalories: totalCalories ?? this.totalCalories,
+      totalProteinG: totalProteinG ?? this.totalProteinG,
+      totalCarbsG: totalCarbsG ?? this.totalCarbsG,
+      totalFatG: totalFatG ?? this.totalFatG,
+      totalFiberG: totalFiberG ?? this.totalFiberG,
+      items: items ?? this.items,
+      warnings: warnings ?? this.warnings,
+      alternativesSuggested:
+          alternativesSuggested ?? this.alternativesSuggested,
+    );
+  }
 }
 
 class ParsedMealItem extends Equatable {
@@ -169,4 +202,38 @@ class ParsedMealItem extends Equatable {
         'serving_description': servingDescription,
         'notes': notes,
       };
+
+  ParsedMealItem copyWith({
+    String? name,
+    double? quantity,
+    String? unit,
+    double? weightG,
+    double? calories,
+    double? proteinG,
+    double? carbsG,
+    double? fatG,
+    double? fiberG,
+    double? sodiumMg,
+    double? sugarG,
+    int? glycemicIndex,
+    String? servingDescription,
+    String? notes,
+  }) {
+    return ParsedMealItem(
+      name: name ?? this.name,
+      quantity: quantity ?? this.quantity,
+      unit: unit ?? this.unit,
+      weightG: weightG ?? this.weightG,
+      calories: calories ?? this.calories,
+      proteinG: proteinG ?? this.proteinG,
+      carbsG: carbsG ?? this.carbsG,
+      fatG: fatG ?? this.fatG,
+      fiberG: fiberG ?? this.fiberG,
+      sodiumMg: sodiumMg ?? this.sodiumMg,
+      sugarG: sugarG ?? this.sugarG,
+      glycemicIndex: glycemicIndex ?? this.glycemicIndex,
+      servingDescription: servingDescription ?? this.servingDescription,
+      notes: notes ?? this.notes,
+    );
+  }
 }

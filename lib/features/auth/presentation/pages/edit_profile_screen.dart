@@ -33,7 +33,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_isInit) {
       final state = context.read<ProfileCubit>().state;
       state.maybeWhen(
-        loaded: (profile, _, __, ___, ____, _____, ______) {
+        loaded: (profile, _, _, _, _, _, _) {
           _nameController = TextEditingController(text: profile.name);
           _ageController = TextEditingController(text: profile.age.toString());
           _heightController = TextEditingController(text: profile.height.toString());
@@ -68,7 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       final state = context.read<ProfileCubit>().state;
       state.maybeWhen(
-        loaded: (profile, _, __, ___, ____, _____, ______) {
+        loaded: (profile, _, _, _, _, _, _) {
           final updatedProfile = profile.copyWith(
             name: _nameController.text.trim(),
             age: int.parse(_ageController.text.trim()),

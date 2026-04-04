@@ -72,14 +72,14 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   void nextDay() {
     state.maybeWhen(
-      loaded: (_, date, __) => loadDashboard(date: date.add(const Duration(days: 1))),
+      loaded: (_, date, _) => loadDashboard(date: date.add(const Duration(days: 1))),
       orElse: () => loadDashboard(date: DateTime.now().add(const Duration(days: 1))),
     );
   }
 
   void previousDay() {
     state.maybeWhen(
-      loaded: (_, date, __) => loadDashboard(date: date.subtract(const Duration(days: 1))),
+      loaded: (_, date, _) => loadDashboard(date: date.subtract(const Duration(days: 1))),
       orElse: () => loadDashboard(date: DateTime.now().subtract(const Duration(days: 1))),
     );
   }

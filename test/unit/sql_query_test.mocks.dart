@@ -31,13 +31,8 @@ import 'package:sorutrack_pro/features/meal_log/domain/models/parsed_meal.dart'
 // ignore_for_file: invalid_use_of_internal_member
 
 class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
-  _FakeEither_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeEither_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [GeminiMealService].
@@ -50,37 +45,29 @@ class MockGeminiMealService extends _i1.Mock implements _i3.GeminiMealService {
     String? mealType,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #parseNaturalLanguageMeal,
-          [
-            userInput,
-            mealType,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-            _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #parseNaturalLanguageMeal,
-            [
-              userInput,
-              mealType,
-            ],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-                _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #parseNaturalLanguageMeal,
-            [
-              userInput,
-              mealType,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
+            Invocation.method(#parseNaturalLanguageMeal, [userInput, mealType]),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#parseNaturalLanguageMeal, [
+                      userInput,
+                      mealType,
+                    ]),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#parseNaturalLanguageMeal, [
+                      userInput,
+                      mealType,
+                    ]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>> parseWithImage(
@@ -88,37 +75,29 @@ class MockGeminiMealService extends _i1.Mock implements _i3.GeminiMealService {
     String? additionalContext,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #parseWithImage,
-          [
-            image,
-            additionalContext,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-            _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #parseWithImage,
-            [
-              image,
-              additionalContext,
-            ],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-                _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #parseWithImage,
-            [
-              image,
-              additionalContext,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
+            Invocation.method(#parseWithImage, [image, additionalContext]),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#parseWithImage, [
+                      image,
+                      additionalContext,
+                    ]),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#parseWithImage, [
+                      image,
+                      additionalContext,
+                    ]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>> correctParsedMeal(
@@ -126,37 +105,29 @@ class MockGeminiMealService extends _i1.Mock implements _i3.GeminiMealService {
     String? correction,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #correctParsedMeal,
-          [
-            original,
-            correction,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-            _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #correctParsedMeal,
-            [
-              original,
-              correction,
-            ],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
-                _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
-          this,
-          Invocation.method(
-            #correctParsedMeal,
-            [
-              original,
-              correction,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
+            Invocation.method(#correctParsedMeal, [original, correction]),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#correctParsedMeal, [
+                      original,
+                      correction,
+                    ]),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.ParsedMeal>(
+                    this,
+                    Invocation.method(#correctParsedMeal, [
+                      original,
+                      correction,
+                    ]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, _i6.ParsedMeal>>);
 }
 
 /// A class which mocks [GamificationService].
@@ -165,21 +136,13 @@ class MockGeminiMealService extends _i1.Mock implements _i3.GeminiMealService {
 class MockGamificationService extends _i1.Mock
     implements _i7.GamificationService {
   @override
-  _i4.Future<void> awardXP(
-    String? userId,
-    String? rewardKey,
-  ) =>
+  _i4.Future<void> awardXP(String? userId, String? rewardKey) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #awardXP,
-          [
-            userId,
-            rewardKey,
-          ],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#awardXP, [userId, rewardKey]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
   _i4.Future<void> processDailyLogCompletion(
@@ -191,35 +154,28 @@ class MockGamificationService extends _i1.Mock
     required bool? perfectMacros,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #processDailyLogCompletion,
-          [userId],
-          {
-            #allMealsLogged: allMealsLogged,
-            #calorieGoalHit: calorieGoalHit,
-            #proteinGoalHit: proteinGoalHit,
-            #waterGoalHit: waterGoalHit,
-            #perfectMacros: perfectMacros,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(
+              #processDailyLogCompletion,
+              [userId],
+              {
+                #allMealsLogged: allMealsLogged,
+                #calorieGoalHit: calorieGoalHit,
+                #proteinGoalHit: proteinGoalHit,
+                #waterGoalHit: waterGoalHit,
+                #perfectMacros: perfectMacros,
+              },
+            ),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 
   @override
-  _i4.Future<void> logMeal(
-    String? userId,
-    bool? isFirstMeal,
-  ) =>
+  _i4.Future<void> logMeal(String? userId, bool? isFirstMeal) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #logMeal,
-          [
-            userId,
-            isFirstMeal,
-          ],
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+            Invocation.method(#logMeal, [userId, isFirstMeal]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

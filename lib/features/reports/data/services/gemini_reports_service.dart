@@ -2,12 +2,14 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sorutrack_pro/core/services/gemini_key_service.dart';
 import 'package:sorutrack_pro/features/reports/domain/models/report_models.dart';
+import 'package:sorutrack_pro/core/services/gemini_client.dart';
 
 @injectable
 class GeminiReportsService {
   final GeminiKeyService _keyService;
+  final GeminiClient _geminiClient;
 
-  GeminiReportsService(this._keyService);
+  GeminiReportsService(this._keyService, this._geminiClient);
 
   Future<String> generateWeeklyInsights({
     required List<ReportTrendData> calories,
@@ -17,11 +19,6 @@ class GeminiReportsService {
   }) async {
     final apiKey = await _keyService.getKey();
     if (apiKey == null) return "No API key found. Please add it in settings.";
-
-    final model = GenerativeModel(
-      model: 'gemini-2.0-flash',
-      apiKey: apiKey,
-    );
 
     final proteinAvg = macros.isEmpty ? 0 : macros.map((e) => e.protein).reduce((a, b) => a + b) / macros.length;
     final carbsAvg = macros.isEmpty ? 0 : macros.map((e) => e.carbs).reduce((a, b) => a + b) / macros.length;
@@ -46,9 +43,12 @@ class GeminiReportsService {
     """;
 
     try {
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
-      return response.text ?? "Failed to generate insights.";
+      final responseText = await _geminiClient.generateContent(
+        apiKey: apiKey,
+        modelName: 'gemini-2.0-flash',
+        content: [Content.text(prompt)],
+      );
+      return responseText ?? "Failed to generate insights.";
     } catch (e) {
       return "Error generating insights: $e";
     }

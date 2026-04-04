@@ -29,13 +29,8 @@ import 'package:sorutrack_pro/features/gamification/domain/repositories/gamifica
 // ignore_for_file: invalid_use_of_internal_member
 
 class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
-  _FakeEither_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeEither_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [GamificationRepository].
@@ -49,22 +44,19 @@ class MockGamificationRepository extends _i1.Mock
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, _i6.GamificationData>> getGamificationData(
-          String? userId) =>
+    String? userId,
+  ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #getGamificationData,
-          [userId],
-        ),
-        returnValue:
-            _i4.Future<_i2.Either<_i5.Failure, _i6.GamificationData>>.value(
-                _FakeEither_0<_i5.Failure, _i6.GamificationData>(
-          this,
-          Invocation.method(
-            #getGamificationData,
-            [userId],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.GamificationData>>);
+            Invocation.method(#getGamificationData, [userId]),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, _i6.GamificationData>>.value(
+                  _FakeEither_0<_i5.Failure, _i6.GamificationData>(
+                    this,
+                    Invocation.method(#getGamificationData, [userId]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, _i6.GamificationData>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, void>> updateXP(
@@ -73,27 +65,15 @@ class MockGamificationRepository extends _i1.Mock
     String? reason,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateXP,
-          [
-            userId,
-            amount,
-            reason,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
-            _FakeEither_0<_i5.Failure, void>(
-          this,
-          Invocation.method(
-            #updateXP,
-            [
-              userId,
-              amount,
-              reason,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, void>>);
+            Invocation.method(#updateXP, [userId, amount, reason]),
+            returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
+              _FakeEither_0<_i5.Failure, void>(
+                this,
+                Invocation.method(#updateXP, [userId, amount, reason]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, void>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, void>> updateStreak(
@@ -101,60 +81,46 @@ class MockGamificationRepository extends _i1.Mock
     bool? increment,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateStreak,
-          [
-            userId,
-            increment,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
-            _FakeEither_0<_i5.Failure, void>(
-          this,
-          Invocation.method(
-            #updateStreak,
-            [
-              userId,
-              increment,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, void>>);
+            Invocation.method(#updateStreak, [userId, increment]),
+            returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
+              _FakeEither_0<_i5.Failure, void>(
+                this,
+                Invocation.method(#updateStreak, [userId, increment]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, void>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, List<_i6.Badge>>> getBadges() =>
       (super.noSuchMethod(
-        Invocation.method(
-          #getBadges,
-          [],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, List<_i6.Badge>>>.value(
-            _FakeEither_0<_i5.Failure, List<_i6.Badge>>(
-          this,
-          Invocation.method(
-            #getBadges,
-            [],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Badge>>>);
+            Invocation.method(#getBadges, []),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, List<_i6.Badge>>>.value(
+                  _FakeEither_0<_i5.Failure, List<_i6.Badge>>(
+                    this,
+                    Invocation.method(#getBadges, []),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Badge>>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, List<_i6.Achievement>>>
-      getUserAchievements(String? userId) => (super.noSuchMethod(
-            Invocation.method(
-              #getUserAchievements,
-              [userId],
-            ),
-            returnValue: _i4
-                .Future<_i2.Either<_i5.Failure, List<_i6.Achievement>>>.value(
-                _FakeEither_0<_i5.Failure, List<_i6.Achievement>>(
-              this,
-              Invocation.method(
-                #getUserAchievements,
-                [userId],
-              ),
-            )),
-          ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Achievement>>>);
+  getUserAchievements(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUserAchievements, [userId]),
+            returnValue:
+                _i4.Future<
+                  _i2.Either<_i5.Failure, List<_i6.Achievement>>
+                >.value(
+                  _FakeEither_0<_i5.Failure, List<_i6.Achievement>>(
+                    this,
+                    Invocation.method(#getUserAchievements, [userId]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Achievement>>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, void>> unlockBadge(
@@ -162,61 +128,47 @@ class MockGamificationRepository extends _i1.Mock
     String? badgeId,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #unlockBadge,
-          [
-            userId,
-            badgeId,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
-            _FakeEither_0<_i5.Failure, void>(
-          this,
-          Invocation.method(
-            #unlockBadge,
-            [
-              userId,
-              badgeId,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, void>>);
+            Invocation.method(#unlockBadge, [userId, badgeId]),
+            returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
+              _FakeEither_0<_i5.Failure, void>(
+                this,
+                Invocation.method(#unlockBadge, [userId, badgeId]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, void>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, List<_i6.Challenge>>>
-      getActiveChallenges() => (super.noSuchMethod(
-            Invocation.method(
-              #getActiveChallenges,
-              [],
-            ),
+  getActiveChallenges() =>
+      (super.noSuchMethod(
+            Invocation.method(#getActiveChallenges, []),
             returnValue:
                 _i4.Future<_i2.Either<_i5.Failure, List<_i6.Challenge>>>.value(
-                    _FakeEither_0<_i5.Failure, List<_i6.Challenge>>(
-              this,
-              Invocation.method(
-                #getActiveChallenges,
-                [],
-              ),
-            )),
-          ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Challenge>>>);
+                  _FakeEither_0<_i5.Failure, List<_i6.Challenge>>(
+                    this,
+                    Invocation.method(#getActiveChallenges, []),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Challenge>>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, List<_i6.UserChallenge>>>
-      getUserChallenges(String? userId) => (super.noSuchMethod(
-            Invocation.method(
-              #getUserChallenges,
-              [userId],
-            ),
-            returnValue: _i4
-                .Future<_i2.Either<_i5.Failure, List<_i6.UserChallenge>>>.value(
-                _FakeEither_0<_i5.Failure, List<_i6.UserChallenge>>(
-              this,
-              Invocation.method(
-                #getUserChallenges,
-                [userId],
-              ),
-            )),
-          ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.UserChallenge>>>);
+  getUserChallenges(String? userId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUserChallenges, [userId]),
+            returnValue:
+                _i4.Future<
+                  _i2.Either<_i5.Failure, List<_i6.UserChallenge>>
+                >.value(
+                  _FakeEither_0<_i5.Failure, List<_i6.UserChallenge>>(
+                    this,
+                    Invocation.method(#getUserChallenges, [userId]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, List<_i6.UserChallenge>>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, void>> updateChallengeProgress(
@@ -225,25 +177,21 @@ class MockGamificationRepository extends _i1.Mock
     double? progress,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateChallengeProgress,
-          [
-            userId,
-            challengeId,
-            progress,
-          ],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
-            _FakeEither_0<_i5.Failure, void>(
-          this,
-          Invocation.method(
-            #updateChallengeProgress,
-            [
+            Invocation.method(#updateChallengeProgress, [
               userId,
               challengeId,
               progress,
-            ],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, void>>);
+            ]),
+            returnValue: _i4.Future<_i2.Either<_i5.Failure, void>>.value(
+              _FakeEither_0<_i5.Failure, void>(
+                this,
+                Invocation.method(#updateChallengeProgress, [
+                  userId,
+                  challengeId,
+                  progress,
+                ]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, void>>);
 }
