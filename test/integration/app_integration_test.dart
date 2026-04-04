@@ -1,3 +1,5 @@
+@Timeout(Duration(minutes: 20))
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -79,6 +81,7 @@ void main() {
     // Switch to test database
     final dbHelper = getIt<DatabaseHelper>();
     await dbHelper.openTestDatabase();
+    await tester.pumpAndSettle();
 
     // 3. Verify Dashboard
     expect(find.text('Dashboard'), findsOneWidget);

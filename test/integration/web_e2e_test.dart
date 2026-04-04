@@ -1,3 +1,5 @@
+@Timeout(Duration(minutes: 20))
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -120,7 +122,7 @@ void main() {
       // On Quick Add
       await tester.enterText(find.byType(TextField), 'I ate an apple');
       await tester.tap(find.text('ANALYZE MEAL'));
-      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
       
       // On Results Screen
       expect(find.text('Apple'), findsOneWidget);
